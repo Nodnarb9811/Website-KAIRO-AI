@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --void: #0a0b0d;
+  --chronos: #8a96a3;
+  --gold: #c9a24b;
+  --gold-bright: #e8d39a;
+  --paper: #f4f0e8;
+  --ink: #1a1815;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { background: var(--void); color: var(--paper); }
+body {
+  font-family: '"Cormorant Garamond"', Georgia, serif;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+::selection { background: rgba(201, 162, 75, 0.3); color: var(--paper); }
+
+.font-display { font-family: 'Cormorant Garamond', Georgia, serif; }
+.font-mono { font-family: 'IBM Plex Mono', ui-monospace, monospace; }
+
+/* fixed canvas */
+#r3f-canvas { position: fixed; inset: 0; z-index: 0; }
+
+/* letter-by-letter chars */
+.char { display: inline-block; opacity: 0; transform: translateY(0.25em);
+  transition: opacity 0.3s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+
+/* seize ring arcs */
+.seize-ring svg { transform: rotate(-90deg); }
+
+/* scroll hint bar */
+@keyframes drop {
+  0% { transform: scaleY(0); transform-origin: top; }
+  50% { transform: scaleY(1); transform-origin: top; }
+  50.1% { transform-origin: bottom; }
+  100% { transform: scaleY(0); transform-origin: bottom; }
+}
+.scroll-bar { animation: drop 2.4s ease-in-out infinite; }
+
+/* corner seal spin */
+@keyframes spin { to { transform: rotate(360deg); } }
+.seal-glyph { animation: spin 18s linear infinite; }
+
+/* editorial marble grain */
+.marble-grain::before {
+  content: ''; position: absolute; inset: 0; pointer-events: none; opacity: 0.5; mix-blend-mode: multiply;
+  background:
+    radial-gradient(120% 80% at 20% 0%, rgba(201, 162, 75, 0.06), transparent 60%),
+    radial-gradient(100% 60% at 90% 30%, rgba(138, 150, 163, 0.08), transparent 55%);
+}
