@@ -63,8 +63,9 @@
     display:flex; align-items:center; justify-content:center;
   }
   .act-text{
-    position:absolute; width:min(90vw,900px); text-align:center;
-    opacity:0; will-change:opacity, transform;
+    position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+    width:min(90vw,900px); text-align:center;
+    opacity:0; will-change:opacity; padding:0 4vw;
   }
   .act-text .line{ display:block; overflow:hidden; }
   .act-text .line + .line{ margin-top:.4em; }
@@ -116,7 +117,8 @@
     color:rgba(138,150,163,.6); margin-top:10px; }
   #forelock.missed .seize-label{ color:var(--chronos); }
   .flash-msg{ font-family:var(--display); font-style:italic; font-size:clamp(22px,3vw,38px);
-    color:var(--paper); opacity:0; transition:opacity .5s ease; position:absolute; }
+    color:var(--paper); opacity:0; transition:opacity .5s ease;
+    position:absolute; left:0; right:0; bottom:22%; text-align:center; }
 
   /* ---------- editorial (Act VI) ---------- */
   #editorial{
@@ -197,6 +199,21 @@
   @keyframes drop{ 0%{ transform:scaleY(0); transform-origin:top; } 50%{ transform:scaleY(1); transform-origin:top;}
     50.1%{ transform-origin:bottom;} 100%{ transform:scaleY(0); transform-origin:bottom; } }
 
+  /* act-progress rail */
+  #actNav{ position:fixed; right:26px; top:50%; transform:translateY(-50%); z-index:7;
+    display:flex; flex-direction:column; gap:16px; list-style:none; margin:0; padding:0;
+    mix-blend-mode:difference; transition:opacity .6s ease; }
+  #actNav li{ display:flex; align-items:center; justify-content:flex-end; gap:10px;
+    font-family:var(--mono); font-size:10px; letter-spacing:.22em; text-transform:uppercase;
+    color:rgba(138,150,163,.45); transition:color .4s ease; }
+  #actNav .lbl{ opacity:0; transform:translateX(6px); transition:opacity .4s ease, transform .4s ease; }
+  #actNav .num{ width:26px; text-align:right; }
+  #actNav .tick{ width:16px; height:1px; background:currentColor; transition:width .4s ease; }
+  #actNav li.on{ color:var(--gold-bright); }
+  #actNav li.on .lbl{ opacity:1; transform:translateX(0); }
+  #actNav li.on .tick{ width:30px; }
+  @media(max-width:720px){ #actNav{ display:none; } }
+
   /* reduced-motion / fallback */
   #fallback{ display:none; }
   body.reduced #scene, body.reduced #cinematic, body.reduced #overlay,
@@ -226,6 +243,16 @@
   <button id="audioToggle" class="ui-btn">Sound · Off</button>
   <div id="scrollHint">Scroll to begin<span class="bar"></span></div>
   <div id="seal"><span class="glyph">K</span></div>
+
+  <!-- act-progress rail -->
+  <ul id="actNav">
+    <li data-i="0"><span class="lbl">Chronos</span><span class="num">I</span><span class="tick"></span></li>
+    <li data-i="1"><span class="lbl">Threshold</span><span class="num">II</span><span class="tick"></span></li>
+    <li data-i="2"><span class="lbl">Kairos</span><span class="num">III</span><span class="tick"></span></li>
+    <li data-i="3"><span class="lbl">Seize</span><span class="num">IV</span><span class="tick"></span></li>
+    <li data-i="4"><span class="lbl">Convergence</span><span class="num">V</span><span class="tick"></span></li>
+    <li data-i="5"><span class="lbl">Operate</span><span class="num">VI</span><span class="tick"></span></li>
+  </ul>
 
   <!-- ============ CINEMATIC SCROLLER ============ -->
   <div id="cinematic"></div>
@@ -1016,6 +1043,15 @@ window.addEventListener('pointermove', (e)=>{
 const clock = new THREE.Clock();
 const scrollHint = document.getElementById('scrollHint');
 const seal = document.getElementById('seal');
+const actNav = document.getElementById('actNav');
+const navItems = Array.from(actNav.querySelectorAll('li'));
+const ACT_BOUNDS = [0, 0.15, 0.30, 0.55, 0.68, 0.85, 1.001];
+function updateActNav(p){
+  let idx = 0;
+  for (let i=0;i<ACT_BOUNDS.length-1;i++){ if (p>=ACT_BOUNDS[i] && p<ACT_BOUNDS[i+1]){ idx=i; break; } }
+  navItems.forEach((li,i)=> li.classList.toggle('on', i===idx));
+  actNav.style.opacity = (p > 0.01 && p < 0.9) ? '1' : '0';
+}
 
 function tick(){
   const dt = clock.getDelta();
@@ -1080,6 +1116,7 @@ function tick(){
   // ---- UI ----
   scrollHint.style.opacity = p < 0.04 ? '1' : '0';
   seal.classList.toggle('show', p > 0.9);
+  updateActNav(p);
 
   composer.render();
   requestAnimationFrame(tick);

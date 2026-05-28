@@ -46,6 +46,11 @@ body {
 @keyframes spin { to { transform: rotate(360deg); } }
 .seal-glyph { animation: spin 18s linear infinite; }
 
+/* act-progress rail active states (.on toggled imperatively) */
+.act-nav-item.on { color: var(--gold-bright); }
+.act-nav-item.on .act-nav-lbl { opacity: 1; transform: translateX(0); }
+.act-nav-item.on .act-nav-tick { width: 30px; }
+
 /* editorial marble grain */
 .marble-grain::before {
   content: ''; position: absolute; inset: 0; pointer-events: none; opacity: 0.5; mix-blend-mode: multiply;

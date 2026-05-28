@@ -4,6 +4,7 @@ import { Experience } from './three/Experience'
 import { Preloader } from './components/Preloader'
 import { Chrome } from './components/Chrome'
 import { ActText } from './components/ActText'
+import { ActNav } from './components/ActNav'
 import { Forelock } from './components/Forelock'
 import { Editorial } from './components/Editorial'
 import { Fallback } from './components/Fallback'
@@ -22,6 +23,7 @@ function Cinematic() {
       <Preloader />
       <Experience />
       <Chrome />
+      <ActNav />
       <ActText />
       <Forelock />
       {/* tall transparent spacer that the camera timeline is mapped onto */}

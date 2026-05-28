@@ -74,7 +74,7 @@ export function Editorial() {
           </a>
         </section>
 
-        <footer className="border-t border-ink/15 py-[40px_0_60px] flex justify-between flex-wrap gap-4 font-mono text-[11px] uppercase tracking-[0.2em] text-ink/55 pb-[60px] pt-[40px]">
+        <footer className="border-t border-ink/15 pt-10 pb-16 flex justify-between flex-wrap gap-4 font-mono text-[11px] uppercase tracking-[0.2em] text-ink/55">
           <span>Kairos AI — Automation &amp; Implementation</span>
           <span>καιρός · the opportune moment</span>
         </footer>

@@ -174,7 +174,7 @@ export function Forelock() {
       </div>
       <div className="font-mono text-[10px] uppercase tracking-[0.28em] text-chronos/60 mt-2.5">press &amp; hold</div>
       <div
-        className={`absolute font-display italic text-[clamp(22px,3vw,38px)] text-paper transition-opacity duration-500 ${
+        className={`absolute left-0 right-0 bottom-[22%] text-center font-display italic text-[clamp(22px,3vw,38px)] text-paper transition-opacity duration-500 ${
           flash ? 'opacity-100' : 'opacity-0'
         }`}
       >

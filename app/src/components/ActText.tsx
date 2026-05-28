@@ -64,7 +64,7 @@ export function ActText() {
   return (
     <div ref={root} className="fixed inset-0 z-[2] flex items-center justify-center pointer-events-none">
       {/* ACT I */}
-      <div data-act="a1" className="absolute w-[min(90vw,900px)] text-center opacity-0">
+      <div data-act="a1" className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(90vw,900px)] px-[4vw] text-center opacity-0">
         <div className="font-mono uppercase tracking-[0.42em] text-chronos text-[clamp(10px,1.1vw,13px)] mb-[1.6em]">
           I · Chronos
         </div>
@@ -77,7 +77,7 @@ export function ActText() {
       </div>
 
       {/* ACT II */}
-      <div data-act="a2" className="absolute w-[min(90vw,900px)] text-center opacity-0">
+      <div data-act="a2" className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(90vw,900px)] px-[4vw] text-center opacity-0">
         <div className="font-mono uppercase tracking-[0.42em] text-chronos text-[clamp(10px,1.1vw,13px)] mb-[1.6em]">
           II · The Threshold
         </div>
@@ -87,7 +87,7 @@ export function ActText() {
       </div>
 
       {/* ACT III — dictionary definition */}
-      <div data-act="a3" className="absolute w-[min(90vw,900px)] text-center opacity-0">
+      <div data-act="a3" className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(90vw,900px)] px-[4vw] text-center opacity-0">
         <div className="inline-block text-left border border-gold/30 bg-void/40 backdrop-blur-sm px-[clamp(26px,4vw,56px)] py-[clamp(22px,3vw,40px)]">
           <div className="font-mono text-[11px] uppercase tracking-[0.34em] text-gold mb-3.5">III · Kairos</div>
           <div className="font-display italic text-[clamp(30px,4.6vw,56px)]">kairos</div>
@@ -101,7 +101,7 @@ export function ActText() {
       </div>
 
       {/* ACT V — convergence */}
-      <div data-act="a5" className="absolute w-[min(90vw,900px)] text-center opacity-0">
+      <div data-act="a5" className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[min(90vw,900px)] px-[4vw] text-center opacity-0">
         <div className="font-mono uppercase tracking-[0.42em] text-chronos text-[clamp(10px,1.1vw,13px)] mb-[1.6em]">
           V · Convergence
         </div>
