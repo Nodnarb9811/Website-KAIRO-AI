@@ -40,6 +40,8 @@ export function Chrome() {
   const { on, toggle } = useDrone()
   const seal = useRef<HTMLDivElement>(null!)
   const hint = useRef<HTMLDivElement>(null!)
+  const brand = useRef<HTMLDivElement>(null!)
+  const sound = useRef<HTMLButtonElement>(null!)
 
   useEffect(() => {
     let raf = 0
@@ -48,6 +50,10 @@ export function Chrome() {
       hint.current.style.opacity = p < 0.04 ? '1' : '0'
       seal.current.style.opacity = p > 0.9 ? '1' : '0'
       seal.current.style.transform = p > 0.9 ? 'scale(1)' : 'scale(.6)'
+      // fade the persistent top chrome out in the editorial (the corner seal carries the brand)
+      const chrome = p > 0.9 ? '0' : '1'
+      brand.current.style.opacity = chrome
+      sound.current.style.opacity = chrome
       raf = requestAnimationFrame(loop)
     }
     raf = requestAnimationFrame(loop)
@@ -56,12 +62,16 @@ export function Chrome() {
 
   return (
     <>
-      <div className="fixed top-6 left-6 z-[7] font-mono text-[11px] tracking-[0.4em] uppercase text-paper/70 mix-blend-difference">
+      <div
+        ref={brand}
+        className="fixed top-6 left-6 z-[7] font-mono text-[11px] tracking-[0.4em] uppercase text-paper/70 mix-blend-difference transition-opacity duration-500"
+      >
         KAIROS AI
       </div>
       <button
+        ref={sound}
         onClick={toggle}
-        className="fixed top-6 right-6 z-[7] font-mono text-[10px] tracking-[0.28em] uppercase text-paper/60 hover:text-gold-bright transition-colors mix-blend-difference"
+        className="fixed top-6 right-6 z-[7] font-mono text-[10px] tracking-[0.28em] uppercase text-paper/60 hover:text-gold-bright transition-[opacity,color] duration-500 mix-blend-difference"
       >
         Sound · {on ? 'On' : 'Off'}
       </button>

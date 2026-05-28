@@ -188,9 +188,10 @@
     text-transform:uppercase; color:rgba(244,240,232,.6); background:none; border:none; cursor:pointer;
     transition:color .3s ease; mix-blend-mode:difference; }
   .ui-btn:hover{ color:var(--gold-bright); }
-  #audioToggle{ top:24px; right:24px; }
+  #audioToggle{ top:24px; right:24px; transition:opacity .5s ease, color .3s ease; }
   #brandMark{ position:fixed; top:24px; left:24px; z-index:7; font-family:var(--mono); font-size:11px;
-    letter-spacing:.4em; text-transform:uppercase; color:rgba(244,240,232,.7); mix-blend-mode:difference; }
+    letter-spacing:.4em; text-transform:uppercase; color:rgba(244,240,232,.7); mix-blend-mode:difference;
+    transition:opacity .5s ease; }
   #scrollHint{ position:fixed; left:50%; bottom:30px; transform:translateX(-50%); z-index:7;
     font-family:var(--mono); font-size:10px; letter-spacing:.3em; text-transform:uppercase;
     color:rgba(138,150,163,.7); transition:opacity .6s ease; }
@@ -1044,6 +1045,7 @@ const clock = new THREE.Clock();
 const scrollHint = document.getElementById('scrollHint');
 const seal = document.getElementById('seal');
 const actNav = document.getElementById('actNav');
+const brandMark = document.getElementById('brandMark');
 const navItems = Array.from(actNav.querySelectorAll('li'));
 const ACT_BOUNDS = [0, 0.15, 0.30, 0.55, 0.68, 0.85, 1.001];
 function updateActNav(p){
@@ -1117,6 +1119,10 @@ function tick(){
   scrollHint.style.opacity = p < 0.04 ? '1' : '0';
   seal.classList.toggle('show', p > 0.9);
   updateActNav(p);
+  // fade the persistent top chrome out in the editorial (the corner seal carries the brand)
+  const chromeOpacity = p > 0.9 ? '0' : '1';
+  brandMark.style.opacity = chromeOpacity;
+  audioBtn.style.opacity = chromeOpacity;
 
   composer.render();
   requestAnimationFrame(tick);
