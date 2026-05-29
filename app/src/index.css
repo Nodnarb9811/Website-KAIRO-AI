@@ -51,6 +51,44 @@ body {
 .act-nav-item.on .act-nav-lbl { opacity: 1; transform: translateX(0); }
 .act-nav-item.on .act-nav-tick { width: 30px; }
 
+/* Kairos relief video (composited through the time-stream) */
+.relief-video {
+  mix-blend-mode: screen;
+  filter: contrast(1.08) saturate(0.82) sepia(0.16) brightness(0.92);
+  transform: scale(1.08);
+  transform-origin: center;
+  -webkit-mask-image: radial-gradient(125% 105% at 50% 45%, #000 38%, transparent 92%);
+  mask-image: radial-gradient(125% 105% at 50% 45%, #000 38%, transparent 92%);
+}
+.relief-tint {
+  mix-blend-mode: overlay;
+  background: linear-gradient(180deg, rgba(201, 162, 75, 0.1), transparent 45%, rgba(10, 11, 13, 0.2));
+}
+
+/* editorial chapter copy elements */
+.body-copy { font-family: 'IBM Plex Mono', monospace; font-weight: 300; font-size: clamp(13px, 1.4vw, 16px);
+  line-height: 1.85; color: rgba(26, 24, 21, 0.78); max-width: 64ch; margin-top: 24px; }
+.body-copy + .body-copy { margin-top: 1.2em; }
+.truth { font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 400;
+  font-size: clamp(20px, 2.4vw, 30px); color: var(--gold); margin-top: 34px; line-height: 1.3; }
+.truth.dim { color: var(--ink); opacity: 0.78; font-size: clamp(18px, 2vw, 26px); margin-top: 14px; }
+.moves { margin-top: 34px; border-top: 1px solid rgba(26, 24, 21, 0.18); }
+.move { display: grid; grid-template-columns: 1fr; gap: 6px; padding: 22px 0; border-bottom: 1px solid rgba(26, 24, 21, 0.14); }
+@media (min-width: 760px) { .move { grid-template-columns: 190px 1fr; gap: 34px; align-items: baseline; } }
+.move .mlabel { font-family: 'IBM Plex Mono', monospace; font-size: 13px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--gold); }
+.move .mdesc { font-family: 'Cormorant Garamond', serif; font-size: clamp(17px, 1.9vw, 23px); font-weight: 300; color: var(--ink); line-height: 1.35; }
+.moments { margin-top: 28px; list-style: none; padding: 0; }
+.moments li { padding: 16px 0; border-bottom: 1px solid rgba(26, 24, 21, 0.12); display: flex; gap: 16px; align-items: baseline; }
+.moments .mk { color: var(--gold); font-family: 'IBM Plex Mono', monospace; font-size: 12px; flex: none; padding-top: 0.45em; letter-spacing: 0.1em; }
+.moments .mt { font-family: 'Cormorant Garamond', serif; font-weight: 300; font-size: clamp(18px, 2vw, 26px); line-height: 1.4; color: var(--ink); }
+.moments .mt b { font-weight: 500; font-style: italic; }
+.cases { margin-top: 28px; border-top: 1px solid rgba(26, 24, 21, 0.18); }
+.case { padding: 22px 0; border-bottom: 1px solid rgba(26, 24, 21, 0.14); display: grid; grid-template-columns: 1fr; gap: 8px; }
+@media (min-width: 760px) { .case { grid-template-columns: 1fr 1.5fr 0.9fr; gap: 28px; align-items: baseline; } }
+.case .c-client { font-family: 'Cormorant Garamond', serif; font-size: clamp(19px, 2vw, 25px); color: var(--ink); }
+.case .c-moment { font-family: 'IBM Plex Mono', monospace; font-size: 13px; line-height: 1.65; color: rgba(26, 24, 21, 0.7); }
+.case .c-num { font-family: 'IBM Plex Mono', monospace; font-size: 13px; letter-spacing: 0.06em; color: var(--gold); }
+
 /* editorial marble grain */
 .marble-grain::before {
   content: ''; position: absolute; inset: 0; pointer-events: none; opacity: 0.5; mix-blend-mode: multiply;

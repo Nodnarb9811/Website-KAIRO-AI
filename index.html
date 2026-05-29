@@ -39,6 +39,17 @@
     z-index:0; display:block;
   }
 
+  /* ---------- the Kairos relief video (composited "through time") ---------- */
+  #reliefLayer{ position:fixed; inset:0; z-index:1; opacity:0; pointer-events:none; will-change:opacity; }
+  #relief{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+    mix-blend-mode:screen;
+    filter:contrast(1.08) saturate(.82) sepia(.16) brightness(.92);
+    transform:scale(1.08); transform-origin:center;
+    -webkit-mask-image:radial-gradient(125% 105% at 50% 45%, #000 38%, transparent 92%);
+    mask-image:radial-gradient(125% 105% at 50% 45%, #000 38%, transparent 92%); }
+  .relief-tint{ position:absolute; inset:0; pointer-events:none; mix-blend-mode:overlay;
+    background:linear-gradient(180deg, rgba(201,162,75,.10), transparent 45%, rgba(10,11,13,.2)); }
+
   /* ---------- preloader ---------- */
   #preloader{
     position:fixed; inset:0; z-index:100;
@@ -157,6 +168,32 @@
   .svc h3{ font-size:clamp(22px,2.6vw,32px); font-weight:400; margin:14px 0 12px; }
   .svc p{ font-family:var(--mono); font-weight:300; font-size:13px; line-height:1.7; color:rgba(26,24,21,.7); }
 
+  /* chapter copy elements */
+  .body-copy{ font-family:var(--mono); font-weight:300; font-size:clamp(13px,1.4vw,16px);
+    line-height:1.85; color:rgba(26,24,21,.78); max-width:64ch; margin-top:24px; }
+  .body-copy + .body-copy{ margin-top:1.2em; }
+  .truth{ font-family:var(--display); font-style:italic; font-weight:400;
+    font-size:clamp(20px,2.4vw,30px); color:var(--gold); margin-top:34px; line-height:1.3; }
+  .truth.dim{ color:var(--ink); opacity:.78; font-size:clamp(18px,2vw,26px); margin-top:14px; }
+  .moves{ margin-top:34px; border-top:1px solid rgba(26,24,21,.18); }
+  .move{ display:grid; grid-template-columns:1fr; gap:6px; padding:22px 0; border-bottom:1px solid rgba(26,24,21,.14); }
+  @media(min-width:760px){ .move{ grid-template-columns:190px 1fr; gap:34px; align-items:baseline; } }
+  .move .mlabel{ font-family:var(--mono); font-size:13px; letter-spacing:.24em; text-transform:uppercase; color:var(--gold); }
+  .move .mdesc{ font-family:var(--display); font-size:clamp(17px,1.9vw,23px); font-weight:300; color:var(--ink); line-height:1.35; }
+  .moments{ margin-top:28px; list-style:none; }
+  .moments li{ padding:16px 0; border-bottom:1px solid rgba(26,24,21,.12);
+    display:flex; gap:16px; align-items:baseline; }
+  .moments .mk{ color:var(--gold); font-family:var(--mono); font-size:12px; flex:none; padding-top:.45em; letter-spacing:.1em; }
+  .moments .mt{ font-family:var(--display); font-weight:300; font-size:clamp(18px,2vw,26px); line-height:1.4; color:var(--ink); }
+  .moments .mt b{ font-weight:500; font-style:italic; }
+  .cases{ margin-top:28px; border-top:1px solid rgba(26,24,21,.18); }
+  .case{ padding:22px 0; border-bottom:1px solid rgba(26,24,21,.14);
+    display:grid; grid-template-columns:1fr; gap:8px; }
+  @media(min-width:760px){ .case{ grid-template-columns:1fr 1.5fr .9fr; gap:28px; align-items:baseline; } }
+  .case .c-client{ font-family:var(--display); font-size:clamp(19px,2vw,25px); color:var(--ink); }
+  .case .c-moment{ font-family:var(--mono); font-size:13px; line-height:1.65; color:rgba(26,24,21,.7); }
+  .case .c-num{ font-family:var(--mono); font-size:13px; letter-spacing:.06em; color:var(--gold); }
+
   .cta-wrap{ text-align:center; padding:clamp(90px,14vw,220px) 0 clamp(70px,10vw,140px); border-top:1px solid rgba(26,24,21,.16); }
   .cta-wrap .placard{ display:block; margin-bottom:22px; }
   .cta-wrap h2{ font-size:clamp(40px,7vw,104px); font-weight:300; line-height:1; letter-spacing:-.02em; }
@@ -218,7 +255,8 @@
   /* reduced-motion / fallback */
   #fallback{ display:none; }
   body.reduced #scene, body.reduced #cinematic, body.reduced #overlay,
-  body.reduced #forelock, body.reduced #scrollHint, body.reduced #preloader{ display:none !important; }
+  body.reduced #forelock, body.reduced #scrollHint, body.reduced #preloader,
+  body.reduced #reliefLayer, body.reduced #actNav{ display:none !important; }
   body.reduced #fallback{ display:block; }
   .fb-hero{ min-height:100vh; display:flex; align-items:center; justify-content:center; flex-direction:column;
     background:radial-gradient(120% 90% at 50% 20%, #14161a, var(--void)); text-align:center; padding:24px; }
@@ -238,6 +276,14 @@
 
   <!-- ============ 3D CANVAS ============ -->
   <canvas id="scene"></canvas>
+
+  <!-- ============ KAIROS RELIEF VIDEO (composited through the time-stream) ============ -->
+  <div id="reliefLayer">
+    <video id="relief" muted loop playsinline preload="auto">
+      <source src="assets/kairos-relief.mp4" type="video/mp4" />
+    </video>
+    <div class="relief-tint"></div>
+  </div>
 
   <!-- ============ UI ============ -->
   <div id="brandMark">KAIROS AI</div>
@@ -308,51 +354,97 @@
   <main id="editorial">
     <div class="ed-inner">
 
+      <!-- I · THE DIAGNOSIS -->
       <section class="ed-hero">
-        <span class="placard">VI · The Operator's Domain</span>
-        <h1>I don't consult.<br><em>I operate.</em></h1>
-        <p>Kairos AI embeds inside your operation and builds the automation that runs it — at the one moment it matters most. Not slides. Not strategy decks. Systems that ship and keep running.</p>
+        <span class="placard">I · The Diagnosis</span>
+        <h1>Most businesses live in <em>Chronos.</em></h1>
+        <p>Chronos is linear time. The slow march. Quarterly. Sequential. Whatever-everyone-else-is-doing. It is where most businesses run — and where most of them will stay, while the window for AI quietly closes around them.</p>
+        <p class="body-copy">Right now, every operator in the country is staring at the same opportunity. Most will read another article about it. A few will hire a consultant to write a slide deck about it. One in fifty will actually do something.</p>
+        <div class="truth">The deck is not the doing.</div>
+        <div class="truth dim">The window is open. It will not be open for long.</div>
       </section>
 
+      <!-- II · THE DOCTRINE -->
       <section class="section">
-        <div class="col-head">
-          <span class="placard">I · Philosophy</span>
-        </div>
+        <div class="col-head"><span class="placard">II · The Doctrine</span></div>
         <div>
-          <h2>Most teams are trapped in <em>Chronos</em> — the linear grind of sequential work.</h2>
-          <p class="lede" style="margin-top:24px;">Kairos is the opportune moment: the instant where the right intervention changes the trajectory of everything after it. We find that moment in your business and operate AI inside it — so leverage compounds instead of leaking.</p>
+          <h2>I don't consult. <em>I operate.</em></h2>
+          <p class="body-copy">Consultants leave you with a strategy. Operators leave you with a system that's already running on Monday.</p>
+          <p class="body-copy">I don't write the report — I build the agent. I don't recommend the workflow — I deploy it, wire it into your stack, train your team on it, and stay on the floor until it's earning its keep. The work doesn't end when the deck is delivered. It begins.</p>
+          <div class="truth">Verbs over nouns. Built over briefed.</div>
         </div>
       </section>
 
+      <!-- III · THE OPERATOR -->
       <section class="section">
-        <div class="col-head"><span class="placard">II · What We Operate</span></div>
+        <div class="col-head"><span class="placard">III · The Operator</span></div>
         <div>
-          <h2>Implementation, <em>not</em> advice.</h2>
-          <div class="svc-grid">
-            <div class="svc"><div class="num">001</div><h3>Workflow Automation</h3><p>End-to-end pipelines that remove the manual middle. Agents that act, not chatbots that suggest.</p></div>
-            <div class="svc"><div class="num">002</div><h3>AI Systems Engineering</h3><p>Production-grade LLM systems — retrieval, tooling, evals, guardrails — built to run unattended.</p></div>
-            <div class="svc"><div class="num">003</div><h3>Operator Embedding</h3><p>We sit inside your team and ship. Hands on keyboards, in your stack, against your metrics.</p></div>
-            <div class="svc"><div class="num">004</div><h3>The Moment Audit</h3><p>We locate the single highest-leverage intervention in your operation — and seize it.</p></div>
+          <h2>I run businesses. <em>That is the qualification.</em></h2>
+          <p class="body-copy">I'm Brandon — Brando — based on the Mornington Peninsula. I don't come from a Big Four advisory practice. I come from the floor. I run Audio Spectrum. I run Sorrento Sharks.</p>
+          <p class="body-copy">I have spent more time inside the weeds of operations than I ever did inside a deck. That matters. When I implement AI inside your business, I am not theorising about your inbox, your roster, your reporting, your pipeline — I have lived all of it. Hands. Dirty.</p>
+          <div class="truth">Hire the operator, not the advisor.</div>
+        </div>
+      </section>
+
+      <!-- IV · THE METHOD -->
+      <section class="section">
+        <div class="col-head"><span class="placard">IV · The Method</span></div>
+        <div>
+          <h2>Embed. Diagnose. Build. <em>Hand over.</em></h2>
+          <p class="body-copy">Four moves. Time-bound. Outcome-bound.</p>
+          <div class="moves">
+            <div class="move"><div class="mlabel">Embed</div><div class="mdesc">I come inside your business for a week. Not a survey. Not a workshop. I sit with your team and watch the work happen.</div></div>
+            <div class="move"><div class="mlabel">Diagnose</div><div class="mdesc">I map the moments — the five places in your operation where AI compresses weeks into minutes, hours into seconds, and expensive humans into expensive humans doing better work.</div></div>
+            <div class="move"><div class="mlabel">Build</div><div class="mdesc">I ship the system. Agents, automations, voice, vision, internal tools — whatever the moment demands. Production-grade. Yours forever.</div></div>
+            <div class="move"><div class="mlabel">Hand over</div><div class="mdesc">I train your people to run it without me. The success metric is that you stop needing me.</div></div>
           </div>
+          <div class="truth">The brief is the system.</div>
         </div>
       </section>
 
+      <!-- V · THE WORK -->
       <section class="section">
-        <div class="col-head"><span class="placard">III · Method</span></div>
+        <div class="col-head"><span class="placard">V · The Work</span></div>
         <div>
-          <h2>Find the moment. <em>Operate</em> it. Compound it.</h2>
-          <p class="lede" style="margin-top:24px;">A fixed engagement, a shipped system, measurable leverage. We do not bill by the hour of conversation. We are accountable to what runs in production after we leave.</p>
+          <h2>Five moments, <em>seized.</em></h2>
+          <p class="body-copy">Every business has moments where AI changes the maths.</p>
+          <ul class="moments">
+            <li><span class="mk">001</span><span class="mt">The moment a lead arrives. <b>Auto-qualified, auto-replied, calendar booked</b> before a human looks.</span></li>
+            <li><span class="mk">002</span><span class="mt">The moment a customer asks. <b>Voice and chat agents that close,</b> not deflect.</span></li>
+            <li><span class="mk">003</span><span class="mt">The moment a report is due. <b>Data pulled, drafted, formatted, sent.</b></span></li>
+            <li><span class="mk">004</span><span class="mt">The moment a decision is made. <b>Internal tools that surface the signal</b> under the noise.</span></li>
+            <li><span class="mk">005</span><span class="mt">The moment work is repeated. <b>Anything done twice is an automation</b> waiting.</span></li>
+          </ul>
+          <p class="body-copy">If your business has these moments — and it does — you have a Kairos problem.</p>
+          <div class="truth">Five moments. Five compounding wins.</div>
         </div>
       </section>
 
+      <!-- VI · EVIDENCE -->
+      <section class="section">
+        <div class="col-head"><span class="placard">VI · Evidence</span></div>
+        <div>
+          <h2>Moments <em>captured.</em></h2>
+          <div class="cases">
+            <div class="case"><div class="c-client">Client name</div><div class="c-moment">The moment — what was seized, in one line.</div><div class="c-num">+ the number</div></div>
+            <div class="case"><div class="c-client">Client name</div><div class="c-moment">The moment — what was seized, in one line.</div><div class="c-num">+ the number</div></div>
+            <div class="case"><div class="c-client">Client name</div><div class="c-moment">The moment — what was seized, in one line.</div><div class="c-num">+ the number</div></div>
+          </div>
+          <div class="truth">Built. Shipped. Running.</div>
+        </div>
+      </section>
+
+      <!-- VII · THE FORELOCK -->
       <section class="cta-wrap">
-        <span class="placard">VII · Seize It</span>
-        <h2>The moment <em>doesn't wait.</em></h2>
-        <a class="cta-btn" href="mailto:hello@kairos.ai?subject=Seize%20the%20moment">Seize the moment →</a>
+        <span class="placard">VII · The Forelock</span>
+        <h2>The moment is here. <em>So is the lock.</em></h2>
+        <p class="body-copy" style="margin:24px auto 0; max-width:60ch; text-align:center;">The myth is clear. You grab the forelock as Kairos approaches. You do not grab the back of his head as he leaves.</p>
+        <p class="body-copy" style="margin:1.2em auto 0; max-width:60ch; text-align:center;">If you're an Australian operator who knows the window is open right now — and you'd rather build than read another article about it — we should talk. One project at a time. Limited slots. No retainers. No theatre.</p>
+        <a class="cta-btn" href="mailto:hello@kairos.ai?subject=Seize%20the%20moment" style="margin-top:48px;">Seize the moment →</a>
       </section>
 
       <footer class="ed-footer">
-        <span>Kairos AI — Automation &amp; Implementation</span>
+        <span>Kairos AI — Automation &amp; Implementation · Mornington Peninsula</span>
         <span>καιρός · the opportune moment</span>
       </footer>
     </div>
@@ -369,6 +461,16 @@
       </div>
     </div>
   </div>
+
+<!-- safety net: never let the preloader block the page if the CDN/module fails to load -->
+<script>
+  window.addEventListener('load', function () {
+    setTimeout(function () {
+      var pl = document.getElementById('preloader');
+      if (pl && !pl.classList.contains('done')) pl.classList.add('done');
+    }, 9000);
+  });
+</script>
 
 <!-- ===================== THREE.JS / GSAP ===================== -->
 <script type="importmap">
@@ -1047,6 +1149,17 @@ const seal = document.getElementById('seal');
 const actNav = document.getElementById('actNav');
 const brandMark = document.getElementById('brandMark');
 const navItems = Array.from(actNav.querySelectorAll('li'));
+const reliefLayer = document.getElementById('reliefLayer');
+const relief = document.getElementById('relief');
+relief.play().catch(()=>{}); // muted autoplay; ignore rejection until interaction
+function updateRelief(p){
+  // the relief emerges through the warping time-stream (Act II), then hands off to the marble figure (Act III)
+  const op = smooth(THREE.MathUtils.clamp((p-0.10)/0.12,0,1)) * (1 - smooth(THREE.MathUtils.clamp((p-0.34)/0.12,0,1)));
+  reliefLayer.style.opacity = op.toFixed(3);
+  relief.style.transform = `scale(${(1.08 + op*0.07).toFixed(3)})`;
+  if (op > 0.02 && relief.paused) relief.play().catch(()=>{});
+  else if (op <= 0.02 && !relief.paused) relief.pause();
+}
 const ACT_BOUNDS = [0, 0.15, 0.30, 0.55, 0.68, 0.85, 1.001];
 function updateActNav(p){
   let idx = 0;
@@ -1119,6 +1232,7 @@ function tick(){
   scrollHint.style.opacity = p < 0.04 ? '1' : '0';
   seal.classList.toggle('show', p > 0.9);
   updateActNav(p);
+  updateRelief(p);
   // fade the persistent top chrome out in the editorial (the corner seal carries the brand)
   const chromeOpacity = p > 0.9 ? '0' : '1';
   brandMark.style.opacity = chromeOpacity;

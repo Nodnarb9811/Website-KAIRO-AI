@@ -58,7 +58,7 @@ For Lovable: drop the contents of `app/` into the project root. The stack
 | Act | Scroll | Beat |
 |-----|--------|------|
 | **I — Chronos** | 0–15% | A straight river of cold marble-dust particles streams toward the horizon. *"Most businesses live in Chronos."* |
-| **II — The Threshold** | 15–30% | The streams begin to **warp**; a golden light ignites in the distance. *"Then there is the moment."* |
+| **II — The Threshold** | 15–30% | The streams begin to **warp**; a golden light ignites. The **Kairos relief video** emerges *through* the time-stream (screen-blended over the particles), then hands off to the marble figure. *"Then there is the moment."* |
 | **III — Kairos Emerges** | 30–55% | A procedural **marble figure** (torso, wing, blade, rolling sphere, gold scales) resolves; the camera orbits. The *kairos* dictionary definition frames it. |
 | **IV — Seize the Forelock** | 55–68% | **Interactive beat.** The forelock glows; *press & hold* to seize the moment before the window closes. Success → time fractures into gold. Miss → the figure turns (bald back of the head), *"The moment doesn't wait. Try again."* |
 | **V — Convergence** | 68–85% | Chronos and Kairos merge into a living gold flow-field. *"AI, operated at the right moment. I don't consult. I operate."* |
@@ -138,6 +138,18 @@ Tune in:
 | **Camera path** | `KEYS[]` (section 6) | `KEYS[]` in `CameraRig.tsx` |
 | **Palette** | `COL` (section 0) + CSS `:root` | shader uniform colors + `tailwind.config.js` + `index.css` |
 | **Post FX** | `bloom` / `finalPass` uniforms (sections 5, 12) | `src/three/Effects.tsx` |
+| **Relief video** | `assets/kairos-relief.mp4` + `#relief` opacity window (`updateRelief`) | `public/kairos-relief.mp4` + `src/components/Relief.tsx` |
+
+### The Kairos relief video
+
+A real cinematic clip of an ancient Greek stone relief is composited **over** the WebGL
+time-stream using `mix-blend-mode: screen` and a radial mask, so the streaming particles read
+*through* the relief — "through time." Its opacity is scroll-driven: it blooms in during Act II
+(`smoothstep(0.10, 0.22)`) and fades as the procedural marble figure takes over in Act III
+(`1 - smoothstep(0.34, 0.46)`). The clip is muted/looped and only plays while visible. Swap the
+file at `assets/kairos-relief.mp4` (preview) and `app/public/kairos-relief.mp4` (app); retune the
+window in `updateRelief` / `Relief.tsx`. It's H.264 — plays in any modern browser, but note that
+headless/open-source Chromium lacks the H.264 codec, so it won't decode there.
 
 ---
 

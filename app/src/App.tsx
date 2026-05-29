@@ -1,6 +1,7 @@
 import { useReducedMotion } from './hooks/useReducedMotion'
 import { useScrollProgress } from './hooks/useScrollProgress'
 import { Experience } from './three/Experience'
+import { Relief } from './components/Relief'
 import { Preloader } from './components/Preloader'
 import { Chrome } from './components/Chrome'
 import { ActText } from './components/ActText'
@@ -22,6 +23,7 @@ function Cinematic() {
     <>
       <Preloader />
       <Experience />
+      <Relief />
       <Chrome />
       <ActNav />
       <ActText />
