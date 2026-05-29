@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { Fragment, useEffect, useRef } from 'react'
 import { scroll, clamp } from '../lib/state'
 
 type Act = { in: number; mid: number; out: number }
@@ -20,10 +20,17 @@ function actOpacity(p: number, a: Act) {
 function Split({ text, className }: { text: string; className?: string }) {
   return (
     <span className={className} data-reveal>
-      {Array.from(text).map((ch, i) => (
-        <span className="char" key={i}>
-          {ch === ' ' ? ' ' : ch}
-        </span>
+      {text.split(' ').map((word, wi) => (
+        <Fragment key={wi}>
+          <span className="word">
+            {Array.from(word).map((ch, ci) => (
+              <span className="char" key={ci}>
+                {ch}
+              </span>
+            ))}
+          </span>
+          {wi < text.split(' ').length - 1 ? ' ' : ''}
+        </Fragment>
       ))}
     </span>
   )

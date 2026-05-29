@@ -26,7 +26,8 @@ body {
 /* fixed canvas */
 #r3f-canvas { position: fixed; inset: 0; z-index: 0; }
 
-/* letter-by-letter chars */
+/* letter-by-letter chars (grouped into words so they never break mid-word) */
+.word { display: inline-block; white-space: nowrap; }
 .char { display: inline-block; opacity: 0; transform: translateY(0.25em);
   transition: opacity 0.3s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
 

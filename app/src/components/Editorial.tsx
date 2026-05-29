@@ -96,13 +96,17 @@ export function Editorial() {
               Engineering depth. Operator instincts. <em className="italic text-gold">Both, in one set of hands.</em>
             </h2>
             <p className="reveal body-copy">
-              I'm Brandon — Brando — an AI implementation specialist based on the Mornington Peninsula, building
-              production-grade systems for Australian businesses.
+              Kairos AI is an Australian implementation practice building production-grade AI systems for businesses
+              that have outgrown the slide deck.
             </p>
-            <p className="reveal body-copy">My work sits at the production edge of applied AI:</p>
+            <p className="reveal body-copy">
+              My name is Brandon. I lead the work from the Mornington Peninsula, and every project we take on is
+              delivered by operators who have lived inside real businesses — not from the boardroom, but from the floor.
+            </p>
+            <p className="reveal body-copy">Our work sits at the production edge of applied AI:</p>
             <p className="reveal plaque">
               Large language models, agentic systems, retrieval-augmented architectures, voice and vision pipelines,
-              automation infrastructure, and internal tooling. I work natively across [Anthropic, OpenAI, n8n, Make,
+              automation infrastructure, and internal tooling. We work natively across [Anthropic, OpenAI, n8n, Make,
               Vapi, Supabase, etc.] and have deployed [N+] systems into live Australian operations.
             </p>
             <p className="reveal body-copy">
@@ -110,16 +114,16 @@ export function Editorial() {
               themselves.
             </p>
             <p className="reveal body-copy">
-              What separates the work is the perspective behind it. I've spent years inside Australian businesses —
-              running Audio Spectrum, Sorrento Sharks, and others — which means I'm not theorising about your operation.
-              I build for the way it actually works: customers, staff, suppliers, Monday mornings, the quarter-end
-              crunch.
+              What separates the work is the perspective behind it. We've operated Australian businesses ourselves —
+              signed real payroll, fielded real customer calls, lived the Monday-morning crunch. We don't theorise
+              about your operation. We build for the way it actually works: customers, staff, suppliers, the
+              quarter-end crunch.
             </p>
             <p className="reveal body-copy">
               That combination is rare. Most engineers can ship the technology. Most consultants can describe the
               strategy. Few do both, inside the business, with their hands on the keys.
             </p>
-            <div className="reveal truth">You're not hiring a vendor. You're hiring the person who builds it, ships it, and stays.</div>
+            <div className="reveal truth">You're not hiring a vendor. You're hiring the team that builds it, ships it, and stays.</div>
           </Chapter>
 
           {/* IV · THE METHOD */}

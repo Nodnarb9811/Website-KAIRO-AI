@@ -89,6 +89,7 @@
   .display-l{ font-weight:300; font-size:clamp(26px,4.4vw,58px); line-height:1.06; }
   .sub{ font-family:var(--mono); font-weight:300; font-size:clamp(11px,1.3vw,15px);
     letter-spacing:.24em; text-transform:uppercase; color:rgba(244,240,232,.55); margin-top:1.4em; }
+  .act-text .word{ display:inline-block; white-space:nowrap; }
   .char{ display:inline-block; opacity:0; transform:translateY(.25em); }
   .gold{ color:var(--gold-bright); }
 
@@ -448,13 +449,14 @@
         <div class="col-head"><span class="placard reveal">III · The Operator</span></div>
         <div>
           <h2 class="reveal">Engineering depth. Operator instincts. <em>Both, in one set of hands.</em></h2>
-          <p class="body-copy reveal">I'm Brandon — Brando — an AI implementation specialist based on the Mornington Peninsula, building production-grade systems for Australian businesses.</p>
-          <p class="body-copy reveal">My work sits at the production edge of applied AI:</p>
-          <p class="plaque reveal">Large language models, agentic systems, retrieval-augmented architectures, voice and vision pipelines, automation infrastructure, and internal tooling. I work natively across [Anthropic, OpenAI, n8n, Make, Vapi, Supabase, etc.] and have deployed [N+] systems into live Australian operations.</p>
+          <p class="body-copy reveal">Kairos AI is an Australian implementation practice building production-grade AI systems for businesses that have outgrown the slide deck.</p>
+          <p class="body-copy reveal">My name is Brandon. I lead the work from the Mornington Peninsula, and every project we take on is delivered by operators who have lived inside real businesses — not from the boardroom, but from the floor.</p>
+          <p class="body-copy reveal">Our work sits at the production edge of applied AI:</p>
+          <p class="plaque reveal">Large language models, agentic systems, retrieval-augmented architectures, voice and vision pipelines, automation infrastructure, and internal tooling. We work natively across [Anthropic, OpenAI, n8n, Make, Vapi, Supabase, etc.] and have deployed [N+] systems into live Australian operations.</p>
           <p class="body-copy reveal">Not demos. Not pilots. Systems that run inside the business, hold up under real load, and pay for themselves.</p>
-          <p class="body-copy reveal">What separates the work is the perspective behind it. I've spent years inside Australian businesses — running Audio Spectrum, Sorrento Sharks, and others — which means I'm not theorising about your operation. I build for the way it actually works: customers, staff, suppliers, Monday mornings, the quarter-end crunch.</p>
+          <p class="body-copy reveal">What separates the work is the perspective behind it. We've operated Australian businesses ourselves — signed real payroll, fielded real customer calls, lived the Monday-morning crunch. We don't theorise about your operation. We build for the way it actually works: customers, staff, suppliers, the quarter-end crunch.</p>
           <p class="body-copy reveal">That combination is rare. Most engineers can ship the technology. Most consultants can describe the strategy. Few do both, inside the business, with their hands on the keys.</p>
-          <div class="truth reveal">You're not hiring a vendor. You're hiring the person who builds it, ships it, and stays.</div>
+          <div class="truth reveal">You're not hiring a vendor. You're hiring the team that builds it, ships it, and stays.</div>
         </div>
       </section>
 
@@ -1091,11 +1093,17 @@ function splitLine(el){
   const text = el.dataset.text || el.textContent;
   el.textContent = '';
   const frag = document.createDocumentFragment();
-  for (const ch of text){
-    const s = document.createElement('span');
-    s.className = 'char';
-    s.textContent = ch === ' ' ? ' ' : ch;
-    frag.appendChild(s);
+  for (const word of text.split(' ')){
+    const w = document.createElement('span');
+    w.className = 'word';
+    for (const ch of word){
+      const s = document.createElement('span');
+      s.className = 'char';
+      s.textContent = ch;
+      w.appendChild(s);
+    }
+    frag.appendChild(w);
+    frag.appendChild(document.createTextNode(' '));
   }
   el.appendChild(frag);
   return Array.from(el.querySelectorAll('.char'));
