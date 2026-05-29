@@ -106,7 +106,7 @@ export function Editorial() {
             <p className="reveal body-copy">Our work sits at the production edge of applied AI:</p>
             <p className="reveal plaque">
               Large language models, agentic systems, retrieval-augmented architectures, voice and vision pipelines,
-              automation infrastructure, and internal tooling. We work natively across [Anthropic, OpenAI, n8n, Make,
+              automation infrastructure, and internal tooling. We work natively across [Anthropic, OpenAI, Gemini, Google AI Studio, n8n, Make,
               Vapi, Supabase, etc.] and have deployed [N+] systems into live Australian operations.
             </p>
             <p className="reveal body-copy">
