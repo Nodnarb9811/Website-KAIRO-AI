@@ -35,6 +35,7 @@ export function ParticleRiver() {
       uGoldMix: { value: 0 },
       uSeize: { value: 0 },
       uSeizeT: { value: 0 },
+      uDim: { value: 1 },
       uSize: { value: CONFIG.particleCount > 60000 ? 18.0 : 13.0 },
       uPixelRatio: { value: CONFIG.pixelRatio },
       uDepth: { value: DEPTH },
@@ -62,6 +63,8 @@ export function ParticleRiver() {
     }
     u.uSeize.value = fx.seize
     u.uSeizeT.value = fx.seizeT
+    // dim the time-stream to a calm ember as the editorial takes over (gutters beside text)
+    u.uDim.value = THREE.MathUtils.lerp(1, CONFIG.editorialStream, smooth(clamp((p - 0.85) / 0.13)))
   })
 
   return (

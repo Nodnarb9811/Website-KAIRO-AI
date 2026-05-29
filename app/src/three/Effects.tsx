@@ -20,7 +20,8 @@ export function Effects() {
     const p = scroll.progress
     const warp = smooth(clamp((p - 0.12) / 0.18))
     const gold = smooth(clamp((p - 0.16) / 0.5))
-    if (bloom.current) bloom.current.intensity = 0.5 + gold * 0.9 + fx.seize * 1.2
+    const editDim = 1 - (1 - CONFIG.editorialStream) * smooth(clamp((p - 0.85) / 0.13))
+    if (bloom.current) bloom.current.intensity = (0.5 + gold * 0.9 + fx.seize * 1.2) * editDim
     if (ca.current?.offset) {
       const amt = 0.0005 + warp * 0.002 + fx.seize * 0.005
       ca.current.offset.set(amt, amt)

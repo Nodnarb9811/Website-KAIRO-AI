@@ -621,6 +621,8 @@ const CONFIG = {
   // forelock interaction tuning
   windowMs: 2600,   // how long the moment stays "grabbable"
   holdMs: 720,      // how long you must hold to seize it
+  // gutter time-stream intensity in the editorial: 1 = full glow, 0 = off. Lower = calmer beside text.
+  editorialStream: 0.28,
 };
 
 const COL = {
@@ -754,6 +756,7 @@ const pUniforms = {
   uGoldMix:  { value:0 },
   uSeize:    { value:0 },   // 0..1 shockwave on successful grab
   uSeizeT:   { value:0 },   // time since seize fired
+  uDim:      { value: 1.0 },
   uSize:     { value: isMobile ? 13.0 : 18.0 },
   uPixelRatio:{ value: CONFIG.pixelRatio },
   uDepth:    { value: DEPTH },
@@ -816,6 +819,7 @@ const pMat = new THREE.ShaderMaterial({
   `,
   fragmentShader: /* glsl */`
     uniform vec3 uColChronos, uColGold, uColGoldHi;
+    uniform float uDim;
     varying float vGold;
     varying float vGlow;
     void main(){
@@ -827,7 +831,7 @@ const pMat = new THREE.ShaderMaterial({
       vec3 col = mix(uColChronos*0.5, uColGold, vGold);
       col = mix(col, uColGoldHi, vGold*vGlow);
       float bright = 0.5 + vGlow*1.4 + vGold*0.6;
-      gl_FragColor = vec4(col*bright, alpha*(0.5 + vGold*0.5));
+      gl_FragColor = vec4(col*bright*uDim, alpha*(0.5 + vGold*0.5)*uDim);
     }
   `,
 });
@@ -1321,7 +1325,10 @@ function tick(){
   finalPass.uniforms.uAberration.value = 0.001 + pUniforms.uWarp.value*0.004 + pUniforms.uSeize.value*0.01;
   finalPass.uniforms.uVignette.value = 1.0;
   finalPass.uniforms.uGrain.value = 0.05;
-  bloom.strength = 0.5 + gold*0.9 + pUniforms.uSeize.value*1.2;
+  // dim the time-stream to a calm ember as the editorial takes over (gutters beside text)
+  const editDim = THREE.MathUtils.lerp(1.0, CONFIG.editorialStream, smooth(THREE.MathUtils.clamp((p-0.85)/0.13,0,1)));
+  pUniforms.uDim.value = editDim;
+  bloom.strength = (0.5 + gold*0.9 + pUniforms.uSeize.value*1.2) * editDim;
 
   // ---- forelock state machine ----
   updateForelock(now);

@@ -47,6 +47,7 @@ export const particleVertex = NOISE_GLSL + /* glsl */ `
 
 export const particleFragment = /* glsl */ `
   uniform vec3 uColChronos, uColGold, uColGoldHi;
+  uniform float uDim;
   varying float vGold;
   varying float vGlow;
   void main(){
@@ -58,6 +59,6 @@ export const particleFragment = /* glsl */ `
     vec3 col = mix(uColChronos*0.5, uColGold, vGold);
     col = mix(col, uColGoldHi, vGold*vGlow);
     float bright = 0.5 + vGlow*1.4 + vGold*0.6;
-    gl_FragColor = vec4(col*bright, alpha*(0.5 + vGold*0.5));
+    gl_FragColor = vec4(col*bright*uDim, alpha*(0.5 + vGold*0.5)*uDim);
   }
 `

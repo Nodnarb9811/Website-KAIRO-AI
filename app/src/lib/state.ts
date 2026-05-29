@@ -10,6 +10,8 @@ export const CONFIG = {
   dof: !isMobile,
   windowMs: 2600, // how long the moment stays grabbable
   holdMs: 720, // how long you must hold to seize it
+  // gutter time-stream intensity in the editorial: 1 = full glow, 0 = off. Lower = calmer beside text.
+  editorialStream: 0.28,
 }
 
 // Mutable, non-reactive scroll progress — read every frame without re-rendering React.
