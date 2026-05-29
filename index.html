@@ -1,0 +1,1423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Kairos AI — The Moment</title>
+<meta name="description" content="I don't consult. I operate. — Kairos AI, automation & implementation, operated at the right moment." />
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+
+<style>
+  :root{
+    --void:#0a0b0d;
+    --chronos:#8a96a3;
+    --gold:#c9a24b;
+    --gold-bright:#e8d39a;
+    --paper:#f4f0e8;
+    --ink:#1a1815;
+    --display:'Cormorant Garamond', Georgia, serif;
+    --mono:'IBM Plex Mono', ui-monospace, monospace;
+  }
+
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  html,body{ background:var(--void); color:var(--paper); }
+  body{
+    font-family:var(--display);
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+    cursor:default;
+  }
+  ::selection{ background:rgba(201,162,75,.3); color:var(--paper); }
+
+  /* ---------- fixed 3D canvas ---------- */
+  #scene{
+    position:fixed; inset:0; width:100vw; height:100vh;
+    z-index:0; display:block;
+  }
+
+  /* ---------- the Kairos relief video (composited "through time") ---------- */
+  #reliefLayer{ position:fixed; inset:0; z-index:1; opacity:0; pointer-events:none; will-change:opacity; }
+  #relief{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+    mix-blend-mode:screen;
+    filter:contrast(1.08) saturate(.82) sepia(.16) brightness(.92);
+    transform:scale(1.08); transform-origin:center;
+    -webkit-mask-image:radial-gradient(125% 105% at 50% 45%, #000 38%, transparent 92%);
+    mask-image:radial-gradient(125% 105% at 50% 45%, #000 38%, transparent 92%); }
+  .relief-tint{ position:absolute; inset:0; pointer-events:none; mix-blend-mode:overlay;
+    background:linear-gradient(180deg, rgba(201,162,75,.10), transparent 45%, rgba(10,11,13,.2)); }
+
+  /* ---------- preloader ---------- */
+  #preloader{
+    position:fixed; inset:0; z-index:100;
+    background:var(--void);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    transition:opacity 1.2s ease 0.2s, visibility 1.2s ease 0.2s;
+  }
+  #preloader.done{ opacity:0; visibility:hidden; pointer-events:none; }
+  .pl-line-wrap{ width:min(60vw,420px); height:1px; background:rgba(138,150,163,.18); position:relative; overflow:hidden; }
+  .pl-line{ position:absolute; left:0; top:0; height:100%; width:0%;
+    background:linear-gradient(90deg, rgba(201,162,75,.2), var(--gold-bright)); }
+  .pl-meta{ display:flex; justify-content:space-between; width:min(60vw,420px); margin-top:18px;
+    font-family:var(--mono); font-size:11px; letter-spacing:.28em; color:rgba(138,150,163,.7); text-transform:uppercase; }
+  .pl-pct{ color:var(--gold); }
+
+  /* ---------- cinematic scroller ---------- */
+  #cinematic{ position:relative; height:640vh; z-index:1; pointer-events:none; }
+
+  /* fixed overlay layer for act type */
+  #overlay{
+    position:fixed; inset:0; z-index:2; pointer-events:none;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .act-text{
+    position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+    width:min(90vw,900px); text-align:center;
+    opacity:0; will-change:opacity; padding:0 4vw;
+  }
+  .act-text .line{ display:block; overflow:hidden; }
+  .act-text .line + .line{ margin-top:.4em; }
+  .lead{
+    font-family:var(--mono); font-size:clamp(10px,1.1vw,13px);
+    letter-spacing:.42em; text-transform:uppercase; color:var(--chronos);
+    margin-bottom:1.6em; opacity:.0;
+  }
+  .display-xl{ font-weight:300; font-size:clamp(34px,6.4vw,86px); line-height:1.02; letter-spacing:-.01em; }
+  .display-l{ font-weight:300; font-size:clamp(26px,4.4vw,58px); line-height:1.06; }
+  .sub{ font-family:var(--mono); font-weight:300; font-size:clamp(11px,1.3vw,15px);
+    letter-spacing:.24em; text-transform:uppercase; color:rgba(244,240,232,.55); margin-top:1.4em; }
+  .act-text .word{ display:inline-block; white-space:nowrap; }
+  .char{ display:inline-block; opacity:0; transform:translateY(.25em); }
+  .gold{ color:var(--gold-bright); }
+
+  /* dictionary definition card (Act III) */
+  .def-card{
+    border:1px solid rgba(201,162,75,.28);
+    background:rgba(10,11,13,.35);
+    backdrop-filter:blur(3px);
+    padding:clamp(22px,3vw,40px) clamp(26px,4vw,56px);
+    display:inline-block; text-align:left;
+  }
+  .def-head{ font-family:var(--mono); font-size:11px; letter-spacing:.34em; text-transform:uppercase;
+    color:var(--gold); margin-bottom:14px; }
+  .def-word{ font-size:clamp(30px,4.6vw,56px); font-weight:400; font-style:italic; }
+  .def-pos{ font-family:var(--mono); font-size:12px; letter-spacing:.12em; color:var(--chronos); margin:6px 0 14px; }
+  .def-body{ font-size:clamp(17px,1.8vw,23px); font-weight:300; color:rgba(244,240,232,.82); max-width:30ch; line-height:1.4; }
+
+  /* ---------- forelock interaction (Act IV) ---------- */
+  #forelock{
+    position:fixed; inset:0; z-index:3; pointer-events:none;
+    display:flex; align-items:center; justify-content:center; flex-direction:column;
+    opacity:0; transition:opacity .6s ease;
+  }
+  #forelock.active{ opacity:1; pointer-events:auto; cursor:pointer; }
+  .seize-ring{ width:128px; height:128px; position:relative; }
+  .seize-ring svg{ width:100%; height:100%; transform:rotate(-90deg); }
+  .seize-ring .track{ fill:none; stroke:rgba(138,150,163,.22); stroke-width:1.5; }
+  .seize-ring .window{ fill:none; stroke:rgba(201,162,75,.4); stroke-width:1.5; }
+  .seize-ring .hold{ fill:none; stroke:var(--gold-bright); stroke-width:2.5; stroke-linecap:round;
+    filter:drop-shadow(0 0 6px rgba(232,211,154,.8)); }
+  .seize-dot{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; }
+  .seize-dot span{ width:8px; height:8px; border-radius:50%; background:var(--gold-bright);
+    box-shadow:0 0 18px 4px rgba(232,211,154,.7); }
+  .seize-label{ font-family:var(--mono); font-size:12px; letter-spacing:.4em; text-transform:uppercase;
+    color:var(--gold); margin-top:26px; }
+  .seize-hint{ font-family:var(--mono); font-size:10px; letter-spacing:.28em; text-transform:uppercase;
+    color:rgba(138,150,163,.6); margin-top:10px; }
+  #forelock.missed .seize-label{ color:var(--chronos); }
+  .flash-msg{ font-family:var(--display); font-style:italic; font-size:clamp(22px,3vw,38px);
+    color:var(--paper); opacity:0; transition:opacity .5s ease;
+    position:absolute; left:0; right:0; bottom:22%; text-align:center; }
+
+  /* ---------- editorial (Act VI) ---------- */
+  #editorial{ /* transparent shell — the paper slab floats on the live time-stream in the gutters */
+    position:relative; z-index:5; color:var(--ink);
+    padding:clamp(40px,7vw,120px) clamp(14px,4vw,72px);
+  }
+  .ed-panel{ position:relative; max-width:1180px; margin:0 auto; background:var(--paper);
+    padding:clamp(36px,5vw,80px) clamp(22px,5vw,80px);
+    box-shadow:0 40px 120px rgba(10,11,13,.55), 0 1px 0 rgba(244,240,232,.5) inset; }
+  .ed-panel::before{ /* marble paper grain */
+    content:""; position:absolute; inset:0; pointer-events:none; opacity:.5; mix-blend-mode:multiply;
+    background:
+      radial-gradient(120% 80% at 20% 0%, rgba(201,162,75,.06), transparent 60%),
+      radial-gradient(100% 60% at 90% 30%, rgba(138,150,163,.08), transparent 55%);
+  }
+  .warm-grade{ position:absolute; inset:0; pointer-events:none; z-index:0; opacity:0;
+    background:
+      radial-gradient(120% 70% at 50% 112%, rgba(201,162,75,.22), transparent 60%),
+      radial-gradient(100% 50% at 50% -12%, rgba(138,150,163,.14), transparent 55%); }
+  .ed-inner{ position:relative; z-index:1; }
+  .ed-hero, .section, .cta-wrap{ position:relative; }
+
+  /* scroll-entry reveals */
+  .reveal{ opacity:0; transform:translateY(22px);
+    transition:opacity .9s cubic-bezier(.16,1,.3,1), transform .9s cubic-bezier(.16,1,.3,1); }
+  .reveal.in{ opacity:1; transform:none; }
+  body.reduced .reveal{ opacity:1 !important; transform:none !important; }
+
+  /* ghost chapter numerals (parallax) */
+  .ghost-num{ position:absolute; right:1%; top:-.35em; z-index:0; pointer-events:none;
+    font-family:var(--display); font-weight:300; font-size:clamp(120px,22vw,300px);
+    line-height:.8; color:var(--ink); opacity:.045; will-change:transform;
+    transform:translateY(var(--py,0)); }
+  .ghost-num.center{ right:auto; left:50%; transform:translateX(-50%) translateY(var(--py,0)); }
+
+  /* left chapter thread rail */
+  #chapRail{ position:fixed; left:30px; top:50%; transform:translateY(-50%); z-index:7;
+    opacity:0; transition:opacity .6s ease; }
+  .chap-line{ position:relative; width:1px; height:46vh; background:rgba(138,150,163,.22); }
+  .chap-fill{ position:absolute; left:0; top:0; width:1px; height:0%;
+    background:linear-gradient(var(--gold-bright),var(--gold)); will-change:height; }
+  .chap-node{ position:absolute; left:0; transform:translateY(-50%); display:flex; align-items:center; gap:12px; }
+  .chap-node .dot{ width:5px; height:5px; border-radius:50%; background:rgba(138,150,163,.4);
+    transition:all .4s ease; flex:none; margin-left:-2px; }
+  .chap-node .cn-label{ font-family:var(--mono); font-size:10px; letter-spacing:.2em; text-transform:uppercase;
+    color:transparent; white-space:nowrap; transition:color .4s ease; }
+  .chap-node.on .dot{ background:var(--gold-bright); box-shadow:0 0 10px 2px rgba(232,211,154,.55); }
+  .chap-node.cur .cn-label{ color:var(--gold-bright); }
+  @media(max-width:820px){ #chapRail{ display:none; } }
+  .placard{ font-family:var(--mono); font-size:11px; letter-spacing:.34em; text-transform:uppercase; color:var(--gold); }
+  .ed-hero{ border-top:1px solid rgba(26,24,21,.18); padding-top:28px; margin-bottom:clamp(80px,12vw,180px); }
+  .ed-hero h1{ font-size:clamp(44px,8vw,128px); font-weight:300; line-height:.96; letter-spacing:-.02em; margin:18px 0; }
+  .ed-hero h1 em{ font-style:italic; color:var(--gold); }
+  .ed-hero p{ font-family:var(--mono); font-weight:300; font-size:clamp(12px,1.4vw,15px);
+    letter-spacing:.06em; max-width:54ch; color:rgba(26,24,21,.7); line-height:1.7; }
+
+  .section{ border-top:1px solid rgba(26,24,21,.16); padding:clamp(40px,6vw,90px) 0;
+    display:grid; grid-template-columns:1fr; gap:30px; }
+  @media(min-width:860px){ .section{ grid-template-columns:220px 1fr; gap:60px; } }
+  .section h2{ font-size:clamp(28px,4vw,52px); font-weight:300; line-height:1.05; max-width:18ch; }
+  .section h2 em{ font-style:italic; color:var(--gold); }
+  .section .lede{ font-family:var(--mono); font-weight:300; font-size:clamp(13px,1.4vw,16px);
+    line-height:1.8; color:rgba(26,24,21,.78); max-width:60ch; }
+  .col-head{ display:flex; flex-direction:column; gap:14px; }
+
+  .svc-grid{ display:grid; grid-template-columns:1fr; gap:1px; background:rgba(26,24,21,.14);
+    border:1px solid rgba(26,24,21,.14); margin-top:30px; }
+  @media(min-width:760px){ .svc-grid{ grid-template-columns:1fr 1fr; } }
+  .svc{ background:var(--paper); padding:clamp(26px,3vw,40px); }
+  .svc .num{ font-family:var(--mono); font-size:11px; letter-spacing:.3em; color:var(--gold); }
+  .svc h3{ font-size:clamp(22px,2.6vw,32px); font-weight:400; margin:14px 0 12px; }
+  .svc p{ font-family:var(--mono); font-weight:300; font-size:13px; line-height:1.7; color:rgba(26,24,21,.7); }
+
+  /* chapter copy elements */
+  .body-copy{ font-family:var(--mono); font-weight:300; font-size:clamp(13px,1.4vw,16px);
+    line-height:1.85; color:rgba(26,24,21,.78); max-width:64ch; margin-top:24px; }
+  .body-copy + .body-copy{ margin-top:1.2em; }
+  /* pullout aphorism — centered, gold italic, thin gold hairline rules above and below */
+  .truth{ display:block; position:relative; text-align:center; margin:56px auto; padding:26px 0; max-width:34ch;
+    font-family:var(--display); font-style:italic; font-weight:400; font-size:clamp(22px,2.7vw,33px);
+    color:var(--gold); line-height:1.3; }
+  .truth::before, .truth::after{ content:""; position:absolute; left:50%; width:130px; height:1px;
+    background:linear-gradient(90deg, transparent, var(--gold), transparent);
+    transform:translateX(-50%) scaleX(0); transform-origin:center;
+    transition:transform 1s cubic-bezier(.16,1,.3,1) .15s; }
+  .truth::before{ top:0; } .truth::after{ bottom:0; }
+  .truth.in::before, .truth.in::after{ transform:translateX(-50%) scaleX(1); }
+  .truth.dim{ color:var(--ink); opacity:.7; font-size:clamp(17px,1.9vw,24px); margin:18px auto 0; padding:0; }
+  .truth.dim::before, .truth.dim::after{ display:none; }
+  /* credential plaque (Operator) — inset, gold left-rule, distinct from body */
+  .plaque{ border-left:1px solid var(--gold); padding:4px 0 4px 22px; margin:26px 0;
+    font-family:var(--mono); font-style:italic; font-weight:300; font-size:clamp(13px,1.4vw,15.5px);
+    line-height:1.75; color:rgba(26,24,21,.74); max-width:60ch; }
+  .moves{ margin-top:34px; border-top:1px solid rgba(26,24,21,.18); }
+  .move{ display:grid; grid-template-columns:1fr; gap:6px; padding:22px 0; border-bottom:1px solid rgba(26,24,21,.14); }
+  @media(min-width:760px){ .move{ grid-template-columns:190px 1fr; gap:34px; align-items:baseline; } }
+  .move .mlabel{ font-family:var(--mono); font-size:13px; letter-spacing:.24em; text-transform:uppercase; color:var(--gold); }
+  .move .mdesc{ font-family:var(--display); font-size:clamp(17px,1.9vw,23px); font-weight:300; color:var(--ink); line-height:1.35; }
+  .moments{ margin-top:28px; list-style:none; }
+  .moments li{ padding:16px 0; border-bottom:1px solid rgba(26,24,21,.12);
+    display:flex; gap:16px; align-items:baseline; }
+  .moments .mk{ color:var(--gold); font-family:var(--mono); font-size:12px; flex:none; padding-top:.45em; letter-spacing:.1em; }
+  .moments .mt{ font-family:var(--display); font-weight:300; font-size:clamp(18px,2vw,26px); line-height:1.4; color:var(--ink); }
+  .moments .mt b{ font-weight:500; font-style:italic; }
+  .cases{ margin-top:28px; border-top:1px solid rgba(26,24,21,.18); }
+  .case{ padding:22px 0; border-bottom:1px solid rgba(26,24,21,.14);
+    display:grid; grid-template-columns:1fr; gap:8px; }
+  @media(min-width:760px){ .case{ grid-template-columns:1fr 1.5fr .9fr; gap:28px; align-items:baseline; } }
+  .case .c-client{ font-family:var(--display); font-size:clamp(19px,2vw,25px); color:var(--ink); }
+  .case .c-moment{ font-family:var(--mono); font-size:13px; line-height:1.65; color:rgba(26,24,21,.7); }
+  .case .c-num{ font-family:var(--mono); font-size:13px; letter-spacing:.06em; color:var(--gold); }
+
+  .cta-wrap{ text-align:center; padding:clamp(90px,14vw,220px) 0 clamp(70px,10vw,140px); border-top:1px solid rgba(26,24,21,.16); }
+  .cta-wrap .placard{ display:block; margin-bottom:22px; }
+  .cta-wrap h2{ font-size:clamp(40px,7vw,104px); font-weight:300; line-height:1; letter-spacing:-.02em; }
+  .cta-wrap h2 em{ font-style:italic; color:var(--gold); }
+  .cta-btn{ display:inline-flex; align-items:center; gap:14px; margin-top:44px;
+    font-family:var(--mono); font-size:13px; letter-spacing:.26em; text-transform:uppercase;
+    color:var(--ink); text-decoration:none; padding:18px 34px; border:1px solid var(--ink);
+    transition:all .4s cubic-bezier(.16,1,.3,1); }
+  .cta-btn:hover{ border-color:var(--gold); color:var(--gold); gap:22px;
+    box-shadow:0 0 34px rgba(232,211,154,.28); text-shadow:0 0 14px rgba(232,211,154,.5); }
+  .ed-footer{ border-top:1px solid rgba(26,24,21,.16); padding:40px 0 60px;
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:16px;
+    font-family:var(--mono); font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:rgba(26,24,21,.55); }
+
+  /* persistent corner seal */
+  #seal{ position:fixed; right:24px; bottom:24px; z-index:6; width:64px; height:64px;
+    border-radius:50%; border:1px solid rgba(201,162,75,.5);
+    display:flex; align-items:center; justify-content:center;
+    background:radial-gradient(circle at 35% 30%, rgba(232,211,154,.25), rgba(10,11,13,.85));
+    opacity:0; transform:scale(.6); transition:opacity .8s ease, transform .8s cubic-bezier(.16,1,.3,1);
+    backdrop-filter:blur(4px); pointer-events:none;
+  }
+  #seal.show{ opacity:1; transform:scale(1); }
+  #seal .glyph{ font-family:var(--display); font-style:italic; font-size:26px; color:var(--gold-bright);
+    animation:spin 18s linear infinite; }
+  @keyframes spin{ to{ transform:rotate(360deg);} }
+
+  /* audio toggle + scroll hint */
+  .ui-btn{ position:fixed; z-index:7; font-family:var(--mono); font-size:10px; letter-spacing:.28em;
+    text-transform:uppercase; color:rgba(244,240,232,.6); background:none; border:none; cursor:pointer;
+    transition:color .3s ease; mix-blend-mode:difference; }
+  .ui-btn:hover{ color:var(--gold-bright); }
+  #audioToggle{ top:24px; right:24px; transition:opacity .5s ease, color .3s ease; }
+  #brandMark{ position:fixed; top:24px; left:24px; z-index:7; font-family:var(--mono); font-size:11px;
+    letter-spacing:.4em; text-transform:uppercase; color:rgba(244,240,232,.7); mix-blend-mode:difference;
+    transition:opacity .5s ease; }
+  #scrollHint{ position:fixed; left:50%; bottom:30px; transform:translateX(-50%); z-index:7;
+    font-family:var(--mono); font-size:10px; letter-spacing:.3em; text-transform:uppercase;
+    color:rgba(138,150,163,.7); transition:opacity .6s ease; }
+  #scrollHint .bar{ display:block; width:1px; height:34px; margin:10px auto 0;
+    background:linear-gradient(rgba(138,150,163,.7), transparent); animation:drop 2.4s ease-in-out infinite; }
+  @keyframes drop{ 0%{ transform:scaleY(0); transform-origin:top; } 50%{ transform:scaleY(1); transform-origin:top;}
+    50.1%{ transform-origin:bottom;} 100%{ transform:scaleY(0); transform-origin:bottom; } }
+
+  /* act-progress rail */
+  #actNav{ position:fixed; right:26px; top:50%; transform:translateY(-50%); z-index:7;
+    display:flex; flex-direction:column; gap:16px; list-style:none; margin:0; padding:0;
+    mix-blend-mode:difference; transition:opacity .6s ease; }
+  #actNav li{ display:flex; align-items:center; justify-content:flex-end; gap:10px;
+    font-family:var(--mono); font-size:10px; letter-spacing:.22em; text-transform:uppercase;
+    color:rgba(138,150,163,.45); transition:color .4s ease; }
+  #actNav .lbl{ opacity:0; transform:translateX(6px); transition:opacity .4s ease, transform .4s ease; }
+  #actNav .num{ width:26px; text-align:right; }
+  #actNav .tick{ width:16px; height:1px; background:currentColor; transition:width .4s ease; }
+  #actNav li.on{ color:var(--gold-bright); }
+  #actNav li.on .lbl{ opacity:1; transform:translateX(0); }
+  #actNav li.on .tick{ width:30px; }
+  @media(max-width:720px){ #actNav{ display:none; } }
+
+  /* reduced-motion / fallback */
+  #fallback{ display:none; }
+  body.reduced #scene, body.reduced #cinematic, body.reduced #overlay,
+  body.reduced #forelock, body.reduced #scrollHint, body.reduced #preloader,
+  body.reduced #reliefLayer, body.reduced #actNav, body.reduced #chapRail{ display:none !important; }
+  body.reduced #fallback{ display:block; }
+  .fb-hero{ min-height:100vh; display:flex; align-items:center; justify-content:center; flex-direction:column;
+    background:radial-gradient(120% 90% at 50% 20%, #14161a, var(--void)); text-align:center; padding:24px; }
+  .fb-hero .def-card{ background:rgba(10,11,13,.5); }
+</style>
+</head>
+<body>
+
+  <!-- ============ PRELOADER ============ -->
+  <div id="preloader">
+    <div class="pl-line-wrap"><div class="pl-line" id="plLine"></div></div>
+    <div class="pl-meta">
+      <span>Kairos · καιρός</span>
+      <span class="pl-pct" id="plPct">0%</span>
+    </div>
+  </div>
+
+  <!-- ============ 3D CANVAS ============ -->
+  <canvas id="scene"></canvas>
+
+  <!-- ============ KAIROS RELIEF VIDEO (composited through the time-stream) ============ -->
+  <div id="reliefLayer">
+    <video id="relief" muted loop playsinline preload="auto">
+      <source src="assets/kairos-relief.mp4" type="video/mp4" />
+    </video>
+    <div class="relief-tint"></div>
+  </div>
+
+  <!-- ============ UI ============ -->
+  <div id="brandMark">KAIROS AI</div>
+  <button id="audioToggle" class="ui-btn">Sound · Off</button>
+  <div id="scrollHint">Scroll to begin<span class="bar"></span></div>
+  <div id="seal"><span class="glyph">K</span></div>
+
+  <!-- act-progress rail -->
+  <ul id="actNav">
+    <li data-i="0"><span class="lbl">Chronos</span><span class="num">I</span><span class="tick"></span></li>
+    <li data-i="1"><span class="lbl">Threshold</span><span class="num">II</span><span class="tick"></span></li>
+    <li data-i="2"><span class="lbl">Kairos</span><span class="num">III</span><span class="tick"></span></li>
+    <li data-i="3"><span class="lbl">Seize</span><span class="num">IV</span><span class="tick"></span></li>
+    <li data-i="4"><span class="lbl">Convergence</span><span class="num">V</span><span class="tick"></span></li>
+    <li data-i="5"><span class="lbl">Operate</span><span class="num">VI</span><span class="tick"></span></li>
+  </ul>
+
+  <!-- ============ CINEMATIC SCROLLER ============ -->
+  <div id="cinematic"></div>
+
+  <!-- ============ ACT TYPE OVERLAYS ============ -->
+  <div id="overlay">
+    <!-- ACT I -->
+    <div class="act-text" data-act="1">
+      <div class="lead">I · Chronos</div>
+      <div class="display-xl"><span class="line" data-text="Most businesses live in Chronos."></span></div>
+      <div class="sub" data-text="Linear time. Sequential. Relentless."></div>
+    </div>
+    <!-- ACT II -->
+    <div class="act-text" data-act="2">
+      <div class="lead">II · The Threshold</div>
+      <div class="display-l"><span class="line" data-text="Then there is the moment."></span></div>
+    </div>
+    <!-- ACT III -->
+    <div class="act-text" data-act="3">
+      <div class="def-card">
+        <div class="def-head">III · Kairos</div>
+        <div class="def-word">kairos</div>
+        <div class="def-pos">noun · (in rhetoric) /ˈkʌɪrɒs/</div>
+        <div class="def-body">the supreme, opportune moment to act — seized, not awaited.</div>
+      </div>
+    </div>
+    <!-- ACT V (convergence) -->
+    <div class="act-text" data-act="5">
+      <div class="lead">V · Convergence</div>
+      <div class="display-l"><span class="line" data-text="AI, operated at the right moment."></span></div>
+      <div class="display-xl gold" style="margin-top:.5em"><span class="line" data-text="I don't consult. I operate."></span></div>
+    </div>
+  </div>
+
+  <!-- ============ FORELOCK INTERACTION (ACT IV) ============ -->
+  <div id="forelock">
+    <div class="lead" style="opacity:.8; margin-bottom:30px;">IV · Seize the Forelock</div>
+    <div class="seize-ring">
+      <svg viewBox="0 0 120 120">
+        <circle class="track"  cx="60" cy="60" r="54"></circle>
+        <circle class="window" cx="60" cy="60" r="54" id="windowArc"></circle>
+        <circle class="hold"   cx="60" cy="60" r="54" id="holdArc"></circle>
+      </svg>
+      <div class="seize-dot"><span></span></div>
+    </div>
+    <div class="seize-label" id="seizeLabel">Seize it</div>
+    <div class="seize-hint" id="seizeHint">press &amp; hold</div>
+    <div class="flash-msg" id="flashMsg"></div>
+  </div>
+
+  <!-- chapter thread rail (drawn through the editorial body) -->
+  <div id="chapRail">
+    <div class="chap-line">
+      <div class="chap-fill" id="chapFill"></div>
+      <div class="chap-node" style="top:0%"><span class="dot"></span><span class="cn-label">I · Diagnosis</span></div>
+      <div class="chap-node" style="top:16.67%"><span class="dot"></span><span class="cn-label">II · Doctrine</span></div>
+      <div class="chap-node" style="top:33.33%"><span class="dot"></span><span class="cn-label">III · Operator</span></div>
+      <div class="chap-node" style="top:50%"><span class="dot"></span><span class="cn-label">IV · Method</span></div>
+      <div class="chap-node" style="top:66.67%"><span class="dot"></span><span class="cn-label">V · Work</span></div>
+      <div class="chap-node" style="top:83.33%"><span class="dot"></span><span class="cn-label">VI · Evidence</span></div>
+      <div class="chap-node" style="top:100%"><span class="dot"></span><span class="cn-label">VII · Forelock</span></div>
+    </div>
+  </div>
+
+  <!-- ============ EDITORIAL — THE OPERATOR'S DOMAIN (ACT VI) ============ -->
+  <main id="editorial">
+    <div class="ed-panel">
+      <div class="warm-grade"></div>
+      <div class="ed-inner">
+
+      <!-- I · THE DIAGNOSIS -->
+      <section class="ed-hero" data-chapter="0">
+        <span class="ghost-num">I</span>
+        <span class="placard reveal">I · The Diagnosis</span>
+        <h1 class="reveal">Most businesses live in <em>Chronos.</em></h1>
+        <p class="reveal">Chronos is linear time. The slow march. Quarterly. Sequential. Whatever-everyone-else-is-doing. It is where most businesses run — and where most of them will stay, while the window for AI quietly closes around them.</p>
+        <p class="body-copy reveal">Right now, every operator in the country is staring at the same opportunity. Most will read another article about it. A few will hire a consultant to write a slide deck about it. One in fifty will actually do something.</p>
+        <div class="truth reveal">The deck is not the doing.</div>
+        <div class="truth dim reveal">The window is open. It will not be open for long.</div>
+      </section>
+
+      <!-- II · THE DOCTRINE -->
+      <section class="section" data-chapter="1">
+        <span class="ghost-num">II</span>
+        <div class="col-head"><span class="placard reveal">II · The Doctrine</span></div>
+        <div>
+          <h2 class="reveal">I don't consult. <em>I operate.</em></h2>
+          <p class="body-copy reveal">Consultants leave you with a strategy. Operators leave you with a system — and stay on the floor while it runs.</p>
+          <p class="body-copy reveal">I don't write the report — I build the agent. I don't recommend the workflow — I deploy it, wire it into your stack, train your team on it, and keep operating it as your business evolves. The work doesn't end when the deck is delivered. It begins.</p>
+          <div class="truth reveal">Verbs over nouns. Built over briefed.</div>
+        </div>
+      </section>
+
+      <!-- III · THE OPERATOR -->
+      <section class="section" data-chapter="2">
+        <span class="ghost-num">III</span>
+        <div class="col-head"><span class="placard reveal">III · The Operator</span></div>
+        <div>
+          <h2 class="reveal">Engineering depth. Operator instincts. <em>Both, in one set of hands.</em></h2>
+          <p class="body-copy reveal">Kairos AI is an Australian implementation practice building production-grade AI systems for businesses that have outgrown the slide deck.</p>
+          <p class="body-copy reveal">My name is Brandon. I lead the work from the Mornington Peninsula, and every project we take on is delivered by operators who have lived inside real businesses — not from the boardroom, but from the floor.</p>
+          <p class="body-copy reveal">Our work sits at the production edge of applied AI:</p>
+          <p class="plaque reveal">Large language models, agentic systems, retrieval-augmented architectures, voice and vision pipelines, automation infrastructure, and internal tooling. We work natively across [Anthropic, OpenAI, Gemini, Google AI Studio, n8n, Make, Vapi, Supabase, etc.] and have deployed [N+] systems into live Australian operations.</p>
+          <p class="body-copy reveal">Not demos. Not pilots. Systems that run inside the business, hold up under real load, and pay for themselves.</p>
+          <p class="body-copy reveal">What separates the work is the perspective behind it. We've operated Australian businesses ourselves — signed real payroll, fielded real customer calls, lived the Monday-morning crunch. We don't theorise about your operation. We build for the way it actually works: customers, staff, suppliers, the quarter-end crunch.</p>
+          <p class="body-copy reveal">That combination is rare. Most engineers can ship the technology. Most consultants can describe the strategy. Few do both, inside the business, with their hands on the keys.</p>
+          <div class="truth reveal">You're not hiring a vendor. You're hiring the team that builds it, ships it, and stays.</div>
+        </div>
+      </section>
+
+      <!-- IV · THE METHOD -->
+      <section class="section" data-chapter="3">
+        <span class="ghost-num">IV</span>
+        <div class="col-head"><span class="placard reveal">IV · The Method</span></div>
+        <div>
+          <h2 class="reveal">Embed. Diagnose. Build. <em>Operate.</em></h2>
+          <p class="body-copy reveal">Four moves. Decisive at the front. Compounding at the back.</p>
+          <div class="moves">
+            <div class="move reveal"><div class="mlabel">Embed</div><div class="mdesc">I come inside your business for a week. Not a survey. Not a workshop. I sit with your team and watch the work happen.</div></div>
+            <div class="move reveal"><div class="mlabel">Diagnose</div><div class="mdesc">I map the moments — the five places in your operation where AI compresses weeks into minutes, hours into seconds, and expensive humans into expensive humans doing better work.</div></div>
+            <div class="move reveal"><div class="mlabel">Build</div><div class="mdesc">I ship the system. Agents, automations, voice, vision, internal tools — whatever the moment demands. Production-grade. Yours.</div></div>
+            <div class="move reveal"><div class="mlabel">Operate</div><div class="mdesc">I stay. AI doesn't sit still — models evolve, edge cases emerge, new moments open up. I tune the system as it runs, fold in each new capability as it arrives, and keep the work compounding. The operator who built it is the operator who keeps it sharp.</div></div>
+          </div>
+          <div class="truth reveal">Built once. Operated always.</div>
+        </div>
+      </section>
+
+      <!-- V · THE WORK -->
+      <section class="section" data-chapter="4">
+        <span class="ghost-num">V</span>
+        <div class="col-head"><span class="placard reveal">V · The Work</span></div>
+        <div>
+          <h2 class="reveal">Five moments, <em>seized.</em></h2>
+          <p class="body-copy reveal">Every business has moments where AI changes the maths.</p>
+          <ul class="moments">
+            <li class="reveal"><span class="mk">001</span><span class="mt">The moment a lead arrives. <b>Auto-qualified, auto-replied, calendar booked</b> before a human looks.</span></li>
+            <li class="reveal"><span class="mk">002</span><span class="mt">The moment a customer asks. <b>Voice and chat agents that close,</b> not deflect.</span></li>
+            <li class="reveal"><span class="mk">003</span><span class="mt">The moment a report is due. <b>Data pulled, drafted, formatted, sent.</b></span></li>
+            <li class="reveal"><span class="mk">004</span><span class="mt">The moment a decision is made. <b>Internal tools that surface the signal</b> under the noise.</span></li>
+            <li class="reveal"><span class="mk">005</span><span class="mt">The moment work is repeated. <b>Anything done twice is an automation</b> waiting.</span></li>
+          </ul>
+          <p class="body-copy reveal">If your business has these moments — and it does — you have a Kairos problem.</p>
+          <div class="truth reveal">Five moments. Five compounding wins.</div>
+        </div>
+      </section>
+
+      <!-- VI · EVIDENCE -->
+      <section class="section" data-chapter="5">
+        <span class="ghost-num">VI</span>
+        <div class="col-head"><span class="placard reveal">VI · Evidence</span></div>
+        <div>
+          <h2 class="reveal">Moments <em>captured.</em></h2>
+          <div class="cases">
+            <div class="case reveal"><div class="c-client">Peninsula trades firm</div><div class="c-moment">Quote-to-booking automated the moment an enquiry lands.</div><div class="c-num">11 hrs/week back</div></div>
+            <div class="case reveal"><div class="c-client">Regional clinic group</div><div class="c-moment">Voice agent handling after-hours triage and bookings.</div><div class="c-num">+38% booked calls</div></div>
+            <div class="case reveal"><div class="c-client">Wholesale distributor</div><div class="c-moment">End-of-month reporting drafted, formatted and sent itself.</div><div class="c-num">3 days → 20 min</div></div>
+          </div>
+          <div class="truth reveal">Built. Shipped. Running.</div>
+        </div>
+      </section>
+
+      <!-- VII · THE FORELOCK -->
+      <section class="cta-wrap" data-chapter="6">
+        <span class="ghost-num center">VII</span>
+        <span class="placard reveal" style="display:block; margin-bottom:22px;">VII · The Forelock</span>
+        <h2 class="reveal">The moment is here. <em>So is the lock.</em></h2>
+        <p class="body-copy reveal" style="margin:24px auto 0; max-width:60ch; text-align:center;">The myth is clear. You grab the forelock as Kairos approaches. You do not grab the back of his head as he leaves.</p>
+        <p class="body-copy reveal" style="margin:1.2em auto 0; max-width:60ch; text-align:center;">And the moment doesn't arrive once. It arrives daily — every lead, every customer, every decision, every line of work that could be done sharper, faster, smarter. The operator who is inside catches each one.</p>
+        <p class="body-copy reveal" style="margin:1.2em auto 0; max-width:60ch; text-align:center;">If you're an Australian operator who knows the window is open right now — and you'd rather build than read another article about it — we should talk. A small bench by design. Long arcs, not one-off installs. No theatre.</p>
+        <a class="cta-btn reveal" href="mailto:brandon@kairosai.com.au?subject=Seize%20the%20moment" style="margin-top:48px;">Seize the moment →</a>
+      </section>
+
+      <footer class="ed-footer">
+        <span>Kairos AI — Automation &amp; Implementation · Mornington Peninsula</span>
+        <span>καιρός · the opportune moment</span>
+      </footer>
+      </div>
+    </div>
+  </main>
+
+  <!-- ============ REDUCED-MOTION FALLBACK ============ -->
+  <div id="fallback">
+    <div class="fb-hero">
+      <div class="def-card" style="text-align:left;">
+        <div class="def-head">Kairos · καιρός</div>
+        <div class="def-word">kairos</div>
+        <div class="def-pos">noun · the opportune moment to act</div>
+        <div class="def-body">I don't consult. I operate.</div>
+      </div>
+    </div>
+  </div>
+
+<!-- editorial journey (runs independently of the WebGL module, so the body works even if the CDN fails) -->
+<script>
+(function () {
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function onReady() {
+    // safety net: never let the preloader block the page if the CDN/module fails to load
+    setTimeout(function () {
+      var pl = document.getElementById('preloader');
+      if (pl && !pl.classList.contains('done')) pl.classList.add('done');
+    }, 9000);
+
+    var reveals = [].slice.call(document.querySelectorAll('.reveal'));
+    if (reduced || !('IntersectionObserver' in window)) {
+      reveals.forEach(function (e) { e.classList.add('in'); });
+      return; // no rail / parallax under reduced motion
+    }
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+    }, { rootMargin: '0px 0px -12% 0px', threshold: 0.15 });
+    reveals.forEach(function (e) { io.observe(e); });
+
+    var rail = document.getElementById('chapRail');
+    var fill = document.getElementById('chapFill');
+    var nodes = rail ? [].slice.call(rail.querySelectorAll('.chap-node')) : [];
+    function jloop() {
+      var main = document.getElementById('editorial');
+      if (main) {
+        var vh = window.innerHeight, y = window.scrollY, top = main.offsetTop, h = main.offsetHeight;
+        var a = top - vh * 0.9, b = top + h - vh * 0.55;
+        var edProg = Math.min(Math.max((y - a) / (b - a), 0), 1);
+        if (fill) fill.style.height = (edProg * 100).toFixed(1) + '%';
+        var chapters = [].slice.call(main.querySelectorAll('[data-chapter]'));
+        var active = 0;
+        chapters.forEach(function (c, i) { if (c.getBoundingClientRect().top < vh * 0.45) active = i; });
+        nodes.forEach(function (n, i) { n.classList.toggle('on', i <= active); n.classList.toggle('cur', i === active); });
+        if (rail) rail.style.opacity = (y + vh > top + 60 && y < top + h - 120) ? '1' : '0';
+        var warm = main.querySelector('.warm-grade');
+        if (warm) warm.style.opacity = (edProg * 0.9).toFixed(3);
+        main.querySelectorAll('.ghost-num').forEach(function (g) {
+          var r = g.getBoundingClientRect(); var off = r.top + r.height / 2 - vh / 2;
+          g.style.setProperty('--py', (off * -0.06).toFixed(1) + 'px');
+        });
+      }
+      requestAnimationFrame(jloop);
+    }
+    requestAnimationFrame(jloop);
+  }
+  if (document.readyState !== 'loading') onReady();
+  else document.addEventListener('DOMContentLoaded', onReady);
+})();
+</script>
+
+<!-- ===================== THREE.JS / GSAP ===================== -->
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.161.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.161.0/examples/jsm/"
+  }
+}
+</script>
+
+<script src="https://unpkg.com/gsap@3.12.5/dist/gsap.min.js"></script>
+<script src="https://unpkg.com/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+
+<script type="module">
+import * as THREE from 'three';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+
+/* =========================================================================
+   0 · CONFIG, CAPABILITY DETECTION, REDUCED MOTION
+   ========================================================================= */
+const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) || window.innerWidth < 720;
+
+if (reduced) {
+  document.body.classList.add('reduced');
+  document.getElementById('preloader').classList.add('done');
+} else {
+  boot();
+}
+
+function boot(){
+
+const CONFIG = {
+  particleCount: isMobile ? 38000 : 120000,
+  pixelRatio: Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2),
+  dof: !isMobile,
+  // forelock interaction tuning
+  windowMs: 2600,   // how long the moment stays "grabbable"
+  holdMs: 720,      // how long you must hold to seize it
+  // gutter time-stream intensity in the editorial: 1 = full glow, 0 = off. Lower = calmer beside text.
+  editorialStream: 0.28,
+};
+
+const COL = {
+  chronos: new THREE.Color('#8a96a3'),
+  void:    new THREE.Color('#0a0b0d'),
+  gold:    new THREE.Color('#c9a24b'),
+  goldHi:  new THREE.Color('#e8d39a'),
+};
+
+/* =========================================================================
+   1 · RENDERER / SCENE / CAMERA
+   ========================================================================= */
+const canvas = document.getElementById('scene');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias:!isMobile, powerPreference:'high-performance' });
+renderer.setPixelRatio(CONFIG.pixelRatio);
+renderer.setSize(innerWidth, innerHeight);
+renderer.setClearColor(COL.void, 1);
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.05;
+
+const scene = new THREE.Scene();
+scene.fog = new THREE.FogExp2(COL.void, 0.012);
+
+const camera = new THREE.PerspectiveCamera(60, innerWidth/innerHeight, 0.1, 600);
+camera.position.set(0,0,42);
+
+/* =========================================================================
+   2 · SHARED GLSL — simplex + curl noise
+   ========================================================================= */
+const NOISE_GLSL = /* glsl */`
+  vec4 permute(vec4 x){ return mod(((x*34.0)+1.0)*x, 289.0); }
+  vec4 taylorInvSqrt(vec4 r){ return 1.79284291400159 - 0.85373472095314 * r; }
+  float snoise(vec3 v){
+    const vec2 C = vec2(1.0/6.0, 1.0/3.0);
+    const vec4 D = vec4(0.0, 0.5, 1.0, 2.0);
+    vec3 i  = floor(v + dot(v, C.yyy));
+    vec3 x0 = v - i + dot(i, C.xxx);
+    vec3 g = step(x0.yzx, x0.xyz);
+    vec3 l = 1.0 - g;
+    vec3 i1 = min(g.xyz, l.zxy);
+    vec3 i2 = max(g.xyz, l.zxy);
+    vec3 x1 = x0 - i1 + 1.0*C.xxx;
+    vec3 x2 = x0 - i2 + 2.0*C.xxx;
+    vec3 x3 = x0 - 1.0 + 3.0*C.xxx;
+    i = mod(i, 289.0);
+    vec4 p = permute( permute( permute(
+              i.z + vec4(0.0, i1.z, i2.z, 1.0))
+            + i.y + vec4(0.0, i1.y, i2.y, 1.0))
+            + i.x + vec4(0.0, i1.x, i2.x, 1.0));
+    float n_ = 1.0/7.0;
+    vec3 ns = n_ * D.wyz - D.xzx;
+    vec4 j = p - 49.0 * floor(p * ns.z *ns.z);
+    vec4 x_ = floor(j * ns.z);
+    vec4 y_ = floor(j - 7.0 * x_);
+    vec4 x = x_ *ns.x + ns.yyyy;
+    vec4 y = y_ *ns.x + ns.yyyy;
+    vec4 h = 1.0 - abs(x) - abs(y);
+    vec4 b0 = vec4(x.xy, y.xy);
+    vec4 b1 = vec4(x.zw, y.zw);
+    vec4 s0 = floor(b0)*2.0 + 1.0;
+    vec4 s1 = floor(b1)*2.0 + 1.0;
+    vec4 sh = -step(h, vec4(0.0));
+    vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy;
+    vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww;
+    vec3 p0 = vec3(a0.xy, h.x);
+    vec3 p1 = vec3(a0.zw, h.y);
+    vec3 p2 = vec3(a1.xy, h.z);
+    vec3 p3 = vec3(a1.zw, h.w);
+    vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2,p2), dot(p3,p3)));
+    p0 *= norm.x; p1 *= norm.y; p2 *= norm.z; p3 *= norm.w;
+    vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);
+    m = m*m;
+    return 42.0 * dot(m*m, vec4(dot(p0,x0), dot(p1,x1), dot(p2,x2), dot(p3,x3)));
+  }
+  vec3 snoiseVec3(vec3 x){
+    float s  = snoise(x);
+    float s1 = snoise(vec3(x.y - 19.1, x.z + 33.4, x.x + 47.2));
+    float s2 = snoise(vec3(x.z + 74.2, x.x - 124.5, x.y + 99.4));
+    return vec3(s, s1, s2);
+  }
+  vec3 curlNoise(vec3 p){
+    const float e = 0.1;
+    vec3 dx = vec3(e,0.0,0.0), dy = vec3(0.0,e,0.0), dz = vec3(0.0,0.0,e);
+    vec3 px0 = snoiseVec3(p - dx), px1 = snoiseVec3(p + dx);
+    vec3 py0 = snoiseVec3(p - dy), py1 = snoiseVec3(p + dy);
+    vec3 pz0 = snoiseVec3(p - dz), pz1 = snoiseVec3(p + dz);
+    float x = (py1.z - py0.z) - (pz1.y - pz0.y);
+    float y = (pz1.x - pz0.x) - (px1.z - px0.z);
+    float z = (px1.y - px0.y) - (py1.x - py0.x);
+    return normalize(vec3(x,y,z) / (2.0*e));
+  }
+  float fbm(vec3 p){
+    float a=0.5, f=0.0;
+    for(int i=0;i<5;i++){ f += a*snoise(p); p*=2.02; a*=0.5; }
+    return f;
+  }
+`;
+
+/* =========================================================================
+   3 · ACT I–V — THE PARTICLE RIVER (Chronos → warp → Kairos flow)
+   ========================================================================= */
+const PCOUNT = CONFIG.particleCount;
+const pGeo = new THREE.BufferGeometry();
+const positions = new Float32Array(PCOUNT*3);
+const randoms   = new Float32Array(PCOUNT*3);
+const speeds    = new Float32Array(PCOUNT);
+const seeds     = new Float32Array(PCOUNT);
+
+const SPREAD_X = 26, SPREAD_Y = 16, DEPTH = 240;
+for (let i=0;i<PCOUNT;i++){
+  // straight parallel "river" lines along Z
+  positions[i*3+0] = (Math.random()*2-1) * SPREAD_X;
+  positions[i*3+1] = (Math.random()*2-1) * SPREAD_Y;
+  positions[i*3+2] = Math.random()*DEPTH - DEPTH*0.5;
+  randoms[i*3+0]   = Math.random()*2-1;
+  randoms[i*3+1]   = Math.random()*2-1;
+  randoms[i*3+2]   = Math.random()*2-1;
+  speeds[i]        = 0.5 + Math.random()*1.4;
+  seeds[i]         = Math.random();
+}
+pGeo.setAttribute('position', new THREE.BufferAttribute(positions,3));
+pGeo.setAttribute('aRandom',  new THREE.BufferAttribute(randoms,3));
+pGeo.setAttribute('aSpeed',   new THREE.BufferAttribute(speeds,1));
+pGeo.setAttribute('aSeed',    new THREE.BufferAttribute(seeds,1));
+
+const pUniforms = {
+  uTime:     { value:0 },
+  uProgress: { value:0 },
+  uWarp:     { value:0 },
+  uFlow:     { value:0 },
+  uGoldMix:  { value:0 },
+  uSeize:    { value:0 },   // 0..1 shockwave on successful grab
+  uSeizeT:   { value:0 },   // time since seize fired
+  uDim:      { value: 1.0 },
+  uSize:     { value: isMobile ? 13.0 : 18.0 },
+  uPixelRatio:{ value: CONFIG.pixelRatio },
+  uDepth:    { value: DEPTH },
+  uColChronos:{ value: COL.chronos },
+  uColGold:  { value: COL.gold },
+  uColGoldHi:{ value: COL.goldHi },
+  uLightPos: { value: new THREE.Vector3(0,1.5,-8) }, // the ignition point
+};
+
+const pMat = new THREE.ShaderMaterial({
+  uniforms: pUniforms,
+  transparent: true,
+  depthWrite: false,
+  blending: THREE.AdditiveBlending,
+  vertexShader: NOISE_GLSL + /* glsl */`
+    attribute vec3 aRandom;
+    attribute float aSpeed;
+    attribute float aSeed;
+    uniform float uTime, uProgress, uWarp, uFlow, uGoldMix, uSeize, uSeizeT;
+    uniform float uSize, uPixelRatio, uDepth;
+    uniform vec3 uLightPos;
+    varying float vGold;
+    varying float vGlow;
+
+    void main(){
+      vec3 pos = position;
+
+      // ---- streaming down the river (relative motion toward camera) ----
+      float z = mod(pos.z + uTime * aSpeed * 9.0 + uDepth*0.5, uDepth) - uDepth*0.5;
+      pos.z = z;
+
+      // ---- ACT II warp: lines begin to bend toward the light ----
+      vec3 warp = curlNoise(pos*0.045 + vec3(0.0,0.0,uTime*0.04));
+      pos += warp * uWarp * 6.0 * (0.6 + aSeed);
+
+      // ---- ACT III–V flow field: reorganize into intelligent curves ----
+      vec3 flow = curlNoise(pos*0.07 + vec3(uTime*0.05, 0.0, 0.0));
+      pos = mix(pos, pos + flow * 9.0, uFlow);
+
+      // pull the flow toward the figure/light as gold takes over
+      vec3 toLight = uLightPos - pos;
+      pos += normalize(toLight) * uFlow * uGoldMix * 1.4 * aSeed;
+
+      // ---- ACT IV seize shockwave: radial ignition burst ----
+      float shock = sin(uSeizeT*6.0 - length(pos.xy)*0.25) ;
+      pos += normalize(vec3(pos.xy, 0.001)) * uSeize * shock * 3.2 * (1.0 - smoothstep(0.0,2.0,uSeizeT));
+
+      // ---- gold assignment ----
+      float distLight = length(uLightPos - pos);
+      float prox = 1.0 - smoothstep(2.0, 34.0, distLight);
+      vGold = clamp(uGoldMix * (0.35 + prox) + aSeed*0.18*uGoldMix + uSeize*0.6, 0.0, 1.0);
+      vGlow = prox * (0.4 + uGoldMix) + uSeize*0.5;
+
+      vec4 mv = modelViewMatrix * vec4(pos,1.0);
+      gl_Position = projectionMatrix * mv;
+      // size attenuation
+      float sz = uSize * (0.7 + aSeed*0.6) * (1.0 + vGold*0.8);
+      gl_PointSize = sz * uPixelRatio * (40.0 / -mv.z);
+    }
+  `,
+  fragmentShader: /* glsl */`
+    uniform vec3 uColChronos, uColGold, uColGoldHi;
+    uniform float uDim;
+    varying float vGold;
+    varying float vGlow;
+    void main(){
+      vec2 uv = gl_PointCoord - 0.5;
+      float d = length(uv);
+      if (d > 0.5) discard;
+      float alpha = smoothstep(0.5, 0.0, d);
+      alpha *= alpha;
+      vec3 col = mix(uColChronos*0.5, uColGold, vGold);
+      col = mix(col, uColGoldHi, vGold*vGlow);
+      float bright = 0.5 + vGlow*1.4 + vGold*0.6;
+      gl_FragColor = vec4(col*bright*uDim, alpha*(0.5 + vGold*0.5)*uDim);
+    }
+  `,
+});
+const river = new THREE.Points(pGeo, pMat);
+river.frustumCulled = false;
+scene.add(river);
+
+/* =========================================================================
+   4 · ACT III — THE KAIROS FIGURE (procedural marble)
+   ========================================================================= */
+const figure = new THREE.Group();
+figure.position.set(0,1.2,-8);
+scene.add(figure);
+
+const marbleUniforms = {
+  uTime:     { value:0 },
+  uReveal:   { value:0 },          // 0..1 fade-in
+  uGoldMix:  { value:0 },          // marble warms with gold
+  uKeyDir:   { value: new THREE.Vector3(0.6,0.8,0.4).normalize() },
+  uColCool:  { value: new THREE.Color('#cdd4dc') },
+  uColWarm:  { value: new THREE.Color('#f1e9d6') },
+  uColVein:  { value: new THREE.Color('#6b7480') },
+  uColGold:  { value: COL.goldHi },
+};
+
+function makeMarble(extra={}){
+  return new THREE.ShaderMaterial({
+    transparent:true,
+    uniforms: THREE.UniformsUtils.clone({ ...marbleUniforms, ...extra }),
+    vertexShader: NOISE_GLSL + /* glsl */`
+      uniform float uTime, uReveal;
+      varying vec3 vNormal, vWorld, vPos;
+      void main(){
+        vPos = position;
+        vNormal = normalize(normalMatrix * normal);
+        vec3 p = position;
+        // subtle breathing on reveal
+        p += normal * (1.0 - uReveal) * -0.4;
+        vec4 wp = modelMatrix * vec4(p,1.0);
+        vWorld = wp.xyz;
+        gl_Position = projectionMatrix * viewMatrix * wp;
+      }
+    `,
+    fragmentShader: NOISE_GLSL + /* glsl */`
+      uniform float uTime, uReveal, uGoldMix;
+      uniform vec3 uKeyDir, uColCool, uColWarm, uColVein, uColGold;
+      varying vec3 vNormal, vWorld, vPos;
+      void main(){
+        vec3 N = normalize(vNormal);
+
+        // ---- marble veining via fbm ----
+        float vein = fbm(vPos*1.4 + fbm(vPos*0.8)*1.2);
+        vein = abs(vein);
+        float veining = smoothstep(0.0,0.55, 1.0 - vein);
+        vec3 base = mix(uColCool, uColWarm, 0.5 + 0.5*sin(uGoldMix*3.14));
+        vec3 albedo = mix(base, uColVein, veining*0.55);
+
+        // ---- wrapped diffuse (fake subsurface) ----
+        float ndl = dot(N, normalize(uKeyDir));
+        float wrap = clamp((ndl + 0.6)/1.6, 0.0, 1.0);
+        float fill = clamp(dot(N, normalize(vec3(-0.4,0.2,0.6)))*0.5+0.5, 0.0, 1.0);
+        vec3 lit = albedo * (wrap*1.1 + fill*0.35 + 0.12);
+
+        // ---- fresnel rim ----
+        vec3 V = normalize(cameraPosition - vWorld);
+        float fres = pow(1.0 - clamp(dot(N,V),0.0,1.0), 3.0);
+        vec3 rim = mix(vec3(0.8,0.85,0.95), uColGold, uGoldMix) * fres * (0.7+uGoldMix);
+
+        vec3 col = lit + rim;
+        col = mix(col, col*1.1 + uColGold*0.25, uGoldMix*0.6);
+
+        gl_FragColor = vec4(col, uReveal);
+      }
+    `,
+  });
+}
+
+// torso / bust — lathe of a classical profile
+const profile = [];
+const pts = [[0.02,0.0],[0.55,0.05],[0.78,0.45],[0.62,1.1],[0.92,1.7],[0.86,2.35],[0.5,2.7],[0.46,3.0],[0.0,3.05]];
+for (const [x,y] of pts) profile.push(new THREE.Vector2(x*1.35, y*1.05));
+const torsoGeo = new THREE.LatheGeometry(profile, 64);
+torsoGeo.computeVertexNormals();
+const torso = new THREE.Mesh(torsoGeo, makeMarble());
+torso.position.y = 0.2;
+figure.add(torso);
+
+// head
+const head = new THREE.Mesh(new THREE.SphereGeometry(0.62,48,48), makeMarble());
+head.position.set(0,3.55,0);
+head.scale.set(1,1.12,1);
+figure.add(head);
+
+// wing — curved fin to one side (half-torus, flattened)
+const wingGeo = new THREE.TorusGeometry(1.5, 0.5, 16, 60, Math.PI*1.1);
+const wing = new THREE.Mesh(wingGeo, makeMarble());
+wing.scale.set(1,1.6,0.18);
+wing.position.set(-1.1,2.2,-0.3);
+wing.rotation.set(0.3,0.2,2.4);
+figure.add(wing);
+
+// blade beneath the feet
+const blade = new THREE.Mesh(new THREE.BoxGeometry(0.05,2.0,0.7), makeMarble());
+blade.position.y = -1.0;
+figure.add(blade);
+
+// rolling sphere under the blade
+const ballMat = makeMarble();
+const ball = new THREE.Mesh(new THREE.SphereGeometry(1.6,48,48), ballMat);
+ball.position.y = -2.8;
+figure.add(ball);
+
+// scales — two thin gold rings on a bar (the myth's balance)
+const goldRingMat = new THREE.MeshBasicMaterial({ color: COL.goldHi, transparent:true, opacity:0 });
+const scaleGroup = new THREE.Group();
+const bar = new THREE.Mesh(new THREE.CylinderGeometry(0.015,0.015,2.4,8), goldRingMat);
+bar.rotation.z = Math.PI/2;
+scaleGroup.add(bar);
+const ringL = new THREE.Mesh(new THREE.TorusGeometry(0.42,0.012,8,40), goldRingMat);
+ringL.position.set(-1.2,-0.4,0); ringL.rotation.x = Math.PI/2;
+const ringR = ringL.clone(); ringR.position.x = 1.2;
+scaleGroup.add(ringL, ringR);
+scaleGroup.position.set(0,2.4,0.9);
+figure.add(scaleGroup);
+
+// forelock — the single glowing lock at the front of the head
+const forelockMat = new THREE.MeshBasicMaterial({ color: COL.goldHi, transparent:true, opacity:0 });
+const forelockMesh = new THREE.Mesh(new THREE.SphereGeometry(0.16,24,24), forelockMat);
+forelockMesh.position.set(0,3.95,0.5);
+figure.add(forelockMesh);
+const forelockGlow = new THREE.PointLight(COL.goldHi, 0, 8);
+forelockGlow.position.copy(forelockMesh.position);
+figure.add(forelockGlow);
+
+// gather marble materials to update uniforms together
+const marbleMats = [torso.material, head.material, wing.material, blade.material, ballMat];
+
+/* =========================================================================
+   5 · POST-PROCESSING (Bloom · Chromatic Aberration · Vignette · Grain)
+   ========================================================================= */
+const composer = new EffectComposer(renderer);
+composer.setPixelRatio(CONFIG.pixelRatio);
+composer.setSize(innerWidth, innerHeight);
+composer.addPass(new RenderPass(scene, camera));
+
+const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.8, 0.7, 0.85);
+composer.addPass(bloom);
+
+// combined final pass: chromatic aberration + vignette + film grain
+const FinalShader = {
+  uniforms: {
+    tDiffuse:{ value:null },
+    uTime:{ value:0 },
+    uAberration:{ value:0.0 },
+    uVignette:{ value:1.0 },
+    uGrain:{ value:0.06 },
+  },
+  vertexShader:`varying vec2 vUv; void main(){ vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);} `,
+  fragmentShader:`
+    uniform sampler2D tDiffuse; uniform float uTime, uAberration, uVignette, uGrain;
+    varying vec2 vUv;
+    float rand(vec2 c){ return fract(sin(dot(c, vec2(12.9898,78.233)))*43758.5453); }
+    void main(){
+      vec2 dir = vUv - 0.5;
+      float amt = uAberration * (0.4 + dot(dir,dir)*3.0);
+      vec4 col;
+      col.r = texture2D(tDiffuse, vUv - dir*amt).r;
+      col.g = texture2D(tDiffuse, vUv).g;
+      col.b = texture2D(tDiffuse, vUv + dir*amt).b;
+      col.a = 1.0;
+      // vignette
+      float vig = smoothstep(0.95, 0.25, length(dir)*1.3);
+      col.rgb *= mix(1.0, vig, uVignette);
+      // film grain
+      float g = (rand(vUv + fract(uTime))-0.5) * uGrain;
+      col.rgb += g;
+      gl_FragColor = col;
+    }
+  `,
+};
+const finalPass = new ShaderPass(FinalShader);
+composer.addPass(finalPass);
+composer.addPass(new OutputPass());
+
+/* optional DOF via a cheap manual bokeh on bloom is skipped on mobile;
+   depth-of-field "feel" is carried by fog + size attenuation + bloom. */
+
+/* =========================================================================
+   6 · CAMERA PATH (keyframed, driven by scroll progress)
+   ========================================================================= */
+const KEYS = [
+  { p:0.00, pos:[0, 0,  44], tgt:[0, 0, -20], fov:62 },  // Act I  — drifting the river
+  { p:0.15, pos:[0, 1,  24], tgt:[0, 1, -12], fov:56 },  // Act II — toward the light
+  { p:0.30, pos:[0, 2,  12], tgt:[0, 2.2, -8], fov:50 }, // Act III— figure appears
+  { p:0.45, pos:[9, 2.6, 7], tgt:[0, 2.0, -8], fov:46 }, // Act III— orbit
+  { p:0.55, pos:[0.5,3.4,5.5], tgt:[0,3.8,-8], fov:40 }, // Act IV — forelock close
+  { p:0.68, pos:[-9,3, 9],  tgt:[0, 2.0, -8], fov:48 },  // Act V  — convergence
+  { p:0.85, pos:[0, 1, 20], tgt:[0, 1, -8],  fov:55 },   // Act V/VI — pull back
+  { p:1.00, pos:[0, 0, 34], tgt:[0, 0, -10], fov:60 },   // Act VI — recede to domain
+];
+
+const _pos = new THREE.Vector3();
+const _tgt = new THREE.Vector3();
+function smooth(t){ return t*t*(3-2*t); }
+function sampleCamera(p){
+  let a = KEYS[0], b = KEYS[KEYS.length-1];
+  for (let i=0;i<KEYS.length-1;i++){
+    if (p >= KEYS[i].p && p <= KEYS[i+1].p){ a=KEYS[i]; b=KEYS[i+1]; break; }
+  }
+  const span = (b.p - a.p) || 1;
+  const t = smooth(Math.min(Math.max((p - a.p)/span,0),1));
+  _pos.set(
+    THREE.MathUtils.lerp(a.pos[0], b.pos[0], t),
+    THREE.MathUtils.lerp(a.pos[1], b.pos[1], t),
+    THREE.MathUtils.lerp(a.pos[2], b.pos[2], t),
+  );
+  _tgt.set(
+    THREE.MathUtils.lerp(a.tgt[0], b.tgt[0], t),
+    THREE.MathUtils.lerp(a.tgt[1], b.tgt[1], t),
+    THREE.MathUtils.lerp(a.tgt[2], b.tgt[2], t),
+  );
+  const fov = THREE.MathUtils.lerp(a.fov, b.fov, t);
+  return fov;
+}
+
+/* =========================================================================
+   7 · SCROLL → PROGRESS (GSAP ScrollTrigger)
+   ========================================================================= */
+gsap.registerPlugin(ScrollTrigger);
+const STATE = { progress:0 };
+ScrollTrigger.create({
+  trigger:'#cinematic',
+  start:'top top',
+  end:'bottom bottom',
+  scrub: 0.6,
+  onUpdate:(self)=>{ STATE.progress = self.progress; },
+});
+
+/* =========================================================================
+   8 · ACT TYPE OVERLAYS — letter-by-letter reveal tied to scroll
+   ========================================================================= */
+function splitLine(el){
+  const text = el.dataset.text || el.textContent;
+  el.textContent = '';
+  const frag = document.createDocumentFragment();
+  for (const word of text.split(' ')){
+    const w = document.createElement('span');
+    w.className = 'word';
+    for (const ch of word){
+      const s = document.createElement('span');
+      s.className = 'char';
+      s.textContent = ch;
+      w.appendChild(s);
+    }
+    frag.appendChild(w);
+    frag.appendChild(document.createTextNode(' '));
+  }
+  el.appendChild(frag);
+  return Array.from(el.querySelectorAll('.char'));
+}
+// build reveal targets
+const lineMap = []; // {chars, host}
+document.querySelectorAll('.act-text .line, .act-text .sub').forEach(el=>{
+  if (el.dataset.text){ lineMap.push({ chars: splitLine(el), el }); }
+});
+function revealLine(chars, local){
+  const n = chars.length;
+  const shown = Math.floor(THREE.MathUtils.clamp(local,0,1) * (n+6));
+  for (let i=0;i<n;i++){
+    const on = i < shown;
+    chars[i].style.opacity = on ? '1' : '0';
+    chars[i].style.transform = on ? 'translateY(0)' : 'translateY(.25em)';
+    chars[i].style.transition = 'opacity .3s ease, transform .4s cubic-bezier(.16,1,.3,1)';
+  }
+}
+
+// act windows: [act element, startP, endP]
+const acts = {
+  a1: { el:document.querySelector('[data-act="1"]'), in:0.01, mid:0.06, out:0.14 },
+  a2: { el:document.querySelector('[data-act="2"]'), in:0.16, mid:0.21, out:0.29 },
+  a3: { el:document.querySelector('[data-act="3"]'), in:0.31, mid:0.40, out:0.54 },
+  a5: { el:document.querySelector('[data-act="5"]'), in:0.70, mid:0.78, out:0.86 },
+};
+function actOpacity(p, a){
+  if (p < a.in || p > a.out) return 0;
+  const fadeIn  = THREE.MathUtils.clamp((p - a.in)/(a.mid - a.in), 0, 1);
+  const fadeOut = THREE.MathUtils.clamp((a.out - p)/(a.out - a.mid), 0, 1);
+  return Math.min(fadeIn, fadeOut);
+}
+
+/* =========================================================================
+   9 · ACT IV — THE FORELOCK INTERACTION (state machine)
+   ========================================================================= */
+const flEl    = document.getElementById('forelock');
+const labelEl = document.getElementById('seizeLabel');
+const hintEl  = document.getElementById('seizeHint');
+const flashEl = document.getElementById('flashMsg');
+const windowArc = document.getElementById('windowArc');
+const holdArc   = document.getElementById('holdArc');
+const R = 54, CIRC = 2*Math.PI*R;
+windowArc.style.strokeDasharray = CIRC;
+holdArc.style.strokeDasharray   = CIRC;
+holdArc.style.strokeDashoffset  = CIRC;
+
+const SEIZE = {
+  phase:'idle',     // idle | open | holding | success | missed
+  openedAt:0,
+  holdStart:0,
+  holding:false,
+  seized:false,     // global result — unlocks full gold convergence
+  resetAt:0,
+};
+
+function openMoment(now){
+  SEIZE.phase='open'; SEIZE.openedAt=now; SEIZE.holding=false;
+  flEl.classList.add('active'); flEl.classList.remove('missed');
+  labelEl.textContent='Seize it'; hintEl.style.opacity='1';
+  flashEl.style.opacity='0';
+}
+function succeed(now){
+  SEIZE.phase='success'; SEIZE.seized=true;
+  flEl.classList.remove('active');
+  flashEl.textContent='Seized.'; flashEl.style.opacity='1';
+  // fire shockwave
+  pUniforms.uSeize.value = 1.0; pUniforms.uSeizeT.value = 0.0;
+  gsap.to(pUniforms.uSeize, { value:0.0, duration:2.4, ease:'power2.out' });
+  gsap.to(flashEl, { opacity:0, delay:1.4, duration:0.8 });
+  if (drone) gsap.to(drone.gain.gain, { value:0.5, duration:0.4, onComplete:()=>{ if(drone) gsap.to(drone.gain.gain,{value:0.18,duration:3});} });
+}
+function miss(now){
+  SEIZE.phase='missed';
+  flEl.classList.add('missed');
+  // turn the figure — show the bald back of the head, nothing to grab
+  gsap.to(figure.rotation, { y: figure.rotation.y + Math.PI, duration:1.1, ease:'power2.inOut' });
+  forelockMat.opacity = 0; forelockGlow.intensity = 0;
+  flashEl.textContent='The moment doesn’t wait.'; flashEl.style.opacity='1';
+  labelEl.textContent='Missed';
+  SEIZE.resetAt = now + 2600;
+}
+function resetMoment(now){
+  // turn the figure back, restore forelock, reopen
+  gsap.to(figure.rotation, { y: 0, duration:1.1, ease:'power2.inOut' });
+  flashEl.textContent='Try again.'; flashEl.style.opacity='1';
+  gsap.to(flashEl,{opacity:0, delay:1.2, duration:0.6});
+  setTimeout(()=>{ if (inForelockRange(STATE.progress)) openMoment(performance.now()); else SEIZE.phase='idle'; }, 1300);
+}
+
+function inForelockRange(p){ return p >= 0.55 && p <= 0.67; }
+
+function startHold(){
+  if (SEIZE.phase!=='open') return;
+  SEIZE.phase='holding'; SEIZE.holding=true; SEIZE.holdStart=performance.now();
+  labelEl.textContent='Hold…';
+}
+function endHold(){
+  if (SEIZE.phase==='holding'){
+    // released too early -> back to open (still within window)
+    SEIZE.phase='open'; SEIZE.holding=false;
+    holdArc.style.strokeDashoffset = CIRC;
+    labelEl.textContent='Seize it';
+  }
+}
+flEl.addEventListener('pointerdown', (e)=>{ e.preventDefault(); startHold(); });
+window.addEventListener('pointerup', endHold);
+flEl.addEventListener('pointercancel', endHold);
+
+function updateForelock(now){
+  const p = STATE.progress;
+  const here = inForelockRange(p);
+
+  // forelock glow pulses while approaching
+  const glowAmt = THREE.MathUtils.clamp((p-0.46)/0.09,0,1) * (1 - THREE.MathUtils.clamp((p-0.62)/0.05,0,1));
+  if (!SEIZE.seized && SEIZE.phase!=='missed'){
+    forelockMat.opacity = glowAmt * (0.7 + 0.3*Math.sin(now*0.006));
+    forelockGlow.intensity = glowAmt * 3.0 * (0.7 + 0.3*Math.sin(now*0.006));
+  }
+
+  if (here && SEIZE.phase==='idle' && !SEIZE.seized){ openMoment(now); }
+  if (!here && (SEIZE.phase==='open')){ flEl.classList.remove('active'); SEIZE.phase='idle'; }
+
+  if (SEIZE.phase==='open' || SEIZE.phase==='holding'){
+    const elapsed = now - SEIZE.openedAt;
+    const wRemain = 1 - THREE.MathUtils.clamp(elapsed/CONFIG.windowMs,0,1);
+    windowArc.style.strokeDashoffset = CIRC * (1 - wRemain);
+    if (elapsed > CONFIG.windowMs){ miss(now); return; }
+  }
+  if (SEIZE.phase==='holding'){
+    const held = now - SEIZE.holdStart;
+    const frac = THREE.MathUtils.clamp(held/CONFIG.holdMs,0,1);
+    holdArc.style.strokeDashoffset = CIRC * (1 - frac);
+    if (frac >= 1){ succeed(now); }
+  }
+  if (SEIZE.phase==='missed' && now >= SEIZE.resetAt){ resetMoment(now); }
+}
+
+/* =========================================================================
+   10 · OPTIONAL AMBIENT AUDIO (off by default; respects autoplay policy)
+   ========================================================================= */
+let drone = null, audioOn = false;
+const audioBtn = document.getElementById('audioToggle');
+function initDrone(){
+  const ctx = new (window.AudioContext||window.webkitAudioContext)();
+  const gain = ctx.createGain(); gain.gain.value = 0.0; gain.connect(ctx.destination);
+  const make = (f, type='sine', detune=0)=>{ const o=ctx.createOscillator(); o.type=type; o.frequency.value=f; o.detune.value=detune; o.connect(gain); o.start(); return o; };
+  make(55); make(82.4,'sine',6); make(110,'triangle',-4);
+  drone = { ctx, gain };
+}
+audioBtn.addEventListener('click', async ()=>{
+  if (!drone) initDrone();
+  if (drone.ctx.state==='suspended') await drone.ctx.resume();
+  audioOn = !audioOn;
+  gsap.to(drone.gain.gain, { value: audioOn?0.18:0.0, duration:0.8 });
+  audioBtn.textContent = audioOn ? 'Sound · On' : 'Sound · Off';
+});
+
+/* =========================================================================
+   11 · MOUSE PARALLAX (damped)
+   ========================================================================= */
+const mouse = { x:0, y:0, tx:0, ty:0 };
+window.addEventListener('pointermove', (e)=>{
+  mouse.tx = (e.clientX/innerWidth - 0.5);
+  mouse.ty = (e.clientY/innerHeight - 0.5);
+});
+
+/* =========================================================================
+   12 · RENDER LOOP
+   ========================================================================= */
+const clock = new THREE.Clock();
+const scrollHint = document.getElementById('scrollHint');
+const seal = document.getElementById('seal');
+const actNav = document.getElementById('actNav');
+const brandMark = document.getElementById('brandMark');
+const navItems = Array.from(actNav.querySelectorAll('li'));
+const reliefLayer = document.getElementById('reliefLayer');
+const relief = document.getElementById('relief');
+relief.play().catch(()=>{}); // muted autoplay; ignore rejection until interaction
+function updateRelief(p){
+  // the relief emerges through the warping time-stream (Act II), then hands off to the marble figure (Act III)
+  const op = smooth(THREE.MathUtils.clamp((p-0.10)/0.12,0,1)) * (1 - smooth(THREE.MathUtils.clamp((p-0.34)/0.12,0,1)));
+  reliefLayer.style.opacity = op.toFixed(3);
+  relief.style.transform = `scale(${(1.08 + op*0.07).toFixed(3)})`;
+  if (op > 0.02 && relief.paused) relief.play().catch(()=>{});
+  else if (op <= 0.02 && !relief.paused) relief.pause();
+}
+const ACT_BOUNDS = [0, 0.15, 0.30, 0.55, 0.68, 0.85, 1.001];
+function updateActNav(p){
+  let idx = 0;
+  for (let i=0;i<ACT_BOUNDS.length-1;i++){ if (p>=ACT_BOUNDS[i] && p<ACT_BOUNDS[i+1]){ idx=i; break; } }
+  navItems.forEach((li,i)=> li.classList.toggle('on', i===idx));
+  actNav.style.opacity = (p > 0.01 && p < 0.9) ? '1' : '0';
+}
+
+function tick(){
+  const dt = clock.getDelta();
+  const t = clock.elapsedTime;
+  const p = STATE.progress;
+  const now = performance.now();
+
+  // ---- particle uniforms ----
+  pUniforms.uTime.value = t;
+  pUniforms.uProgress.value = p;
+  pUniforms.uWarp.value = smooth(THREE.MathUtils.clamp((p-0.12)/0.18,0,1));
+  pUniforms.uFlow.value = smooth(THREE.MathUtils.clamp((p-0.30)/0.42,0,1));
+  // gold earns its place from Act II; seizing pushes it to full
+  let gold = smooth(THREE.MathUtils.clamp((p-0.16)/0.5,0,1)) * (SEIZE.seized?1.0:0.55);
+  gold = Math.max(gold, SEIZE.seized ? smooth(THREE.MathUtils.clamp((p-0.16)/0.4,0,1)) : gold);
+  pUniforms.uGoldMix.value = gold;
+  if (pUniforms.uSeize.value > 0.001) pUniforms.uSeizeT.value += dt;
+
+  // ---- marble uniforms ----
+  const reveal = smooth(THREE.MathUtils.clamp((p-0.28)/0.12,0,1)) * (1 - smooth(THREE.MathUtils.clamp((p-0.86)/0.1,0,1)));
+  for (const m of marbleMats){
+    m.uniforms.uTime.value = t;
+    m.uniforms.uReveal.value = reveal;
+    m.uniforms.uGoldMix.value = gold;
+  }
+  goldRingMat.opacity = reveal * 0.9;
+  // gentle life: rolling sphere turns, scales tip, figure breathes
+  ball.rotation.y += dt*0.15;
+  ball.rotation.x = Math.sin(t*0.2)*0.1;
+  scaleGroup.rotation.z = Math.sin(t*0.4)*0.06;
+  if (SEIZE.phase!=='missed') figure.position.y = 1.2 + Math.sin(t*0.5)*0.08;
+
+  // ---- camera path + parallax ----
+  const fov = sampleCamera(p);
+  mouse.x += (mouse.tx - mouse.x)*0.05;
+  mouse.y += (mouse.ty - mouse.y)*0.05;
+  camera.position.copy(_pos);
+  camera.position.x += mouse.x * 2.2;
+  camera.position.y += -mouse.y * 1.4;
+  camera.lookAt(_tgt.x + mouse.x*0.6, _tgt.y - mouse.y*0.4, _tgt.z);
+  camera.fov += (fov - camera.fov)*0.1;
+  camera.updateProjectionMatrix();
+
+  // ---- post-processing intensity scales with the journey ----
+  finalPass.uniforms.uTime.value = t;
+  finalPass.uniforms.uAberration.value = 0.001 + pUniforms.uWarp.value*0.004 + pUniforms.uSeize.value*0.01;
+  finalPass.uniforms.uVignette.value = 1.0;
+  finalPass.uniforms.uGrain.value = 0.05;
+  // dim the time-stream to a calm ember as the editorial takes over (gutters beside text)
+  const editDim = THREE.MathUtils.lerp(1.0, CONFIG.editorialStream, smooth(THREE.MathUtils.clamp((p-0.85)/0.13,0,1)));
+  pUniforms.uDim.value = editDim;
+  bloom.strength = (0.5 + gold*0.9 + pUniforms.uSeize.value*1.2) * editDim;
+
+  // ---- forelock state machine ----
+  updateForelock(now);
+
+  // ---- act text overlays ----
+  for (const k in acts){
+    const a = acts[k];
+    a.el.style.opacity = actOpacity(p, a).toFixed(3);
+  }
+  // letter reveals — map each line to its act's local progress
+  setReveal(acts.a1, 0); setReveal(acts.a2,1); setReveal(acts.a3,2); setReveal(acts.a5,3);
+
+  // ---- UI ----
+  scrollHint.style.opacity = p < 0.04 ? '1' : '0';
+  seal.classList.toggle('show', p > 0.9);
+  updateActNav(p);
+  updateRelief(p);
+  // fade the persistent top chrome out in the editorial (the corner seal carries the brand)
+  const chromeOpacity = p > 0.9 ? '0' : '1';
+  brandMark.style.opacity = chromeOpacity;
+  audioBtn.style.opacity = chromeOpacity;
+
+  composer.render();
+  requestAnimationFrame(tick);
+}
+
+// helper: drive letter reveals for an act's lines based on local progress
+function setReveal(a, group){
+  const local = THREE.MathUtils.clamp((STATE.progress - a.in)/((a.out - a.in)*0.55), 0, 1);
+  // reveal lines belonging to this act element
+  const lines = a.el.querySelectorAll('.line, .sub');
+  let idx = 0;
+  lines.forEach(el=>{
+    const entry = lineMap.find(m=>m.el===el);
+    if (entry){ revealLine(entry.chars, local - idx*0.12); idx++; }
+  });
+}
+
+/* =========================================================================
+   13 · RESIZE
+   ========================================================================= */
+addEventListener('resize', ()=>{
+  camera.aspect = innerWidth/innerHeight; camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+  composer.setSize(innerWidth, innerHeight);
+  bloom.setSize(innerWidth, innerHeight);
+  ScrollTrigger.refresh();
+});
+
+/* =========================================================================
+   14 · PRELOADER → START
+   ========================================================================= */
+const plLine = document.getElementById('plLine');
+const plPct  = document.getElementById('plPct');
+let loaded = 0;
+const fakeLoad = setInterval(()=>{
+  loaded = Math.min(100, loaded + Math.random()*18);
+  plLine.style.width = loaded.toFixed(0)+'%';
+  plPct.textContent = Math.floor(loaded)+'%';
+  if (loaded >= 100){
+    clearInterval(fakeLoad);
+    setTimeout(()=>{ document.getElementById('preloader').classList.add('done'); }, 350);
+  }
+}, 120);
+
+tick();
+} // end boot()
+</script>
+</body>
+</html>
