@@ -3,8 +3,8 @@ import { useEffect, useRef } from 'react'
 const MOVES = [
   { label: 'Embed', desc: 'I come inside your business for a week. Not a survey. Not a workshop. I sit with your team and watch the work happen.' },
   { label: 'Diagnose', desc: 'I map the moments — the five places in your operation where AI compresses weeks into minutes, hours into seconds, and expensive humans into expensive humans doing better work.' },
-  { label: 'Build', desc: 'I ship the system. Agents, automations, voice, vision, internal tools — whatever the moment demands. Production-grade. Yours forever.' },
-  { label: 'Hand over', desc: 'I train your people to run it without me. The success metric is that you stop needing me.' },
+  { label: 'Build', desc: 'I ship the system. Agents, automations, voice, vision, internal tools — whatever the moment demands. Production-grade. Yours.' },
+  { label: 'Operate', desc: "I stay. AI doesn't sit still — models evolve, edge cases emerge, new moments open up. I tune the system as it runs, fold in each new capability as it arrives, and keep the work compounding. The operator who built it is the operator who keeps it sharp." },
 ]
 
 const MOMENTS = [
@@ -72,12 +72,13 @@ export function Editorial() {
               I don't consult. <em className="italic text-gold">I operate.</em>
             </h2>
             <p className="reveal body-copy">
-              Consultants leave you with a strategy. Operators leave you with a system that's already running on Monday.
+              Consultants leave you with a strategy. Operators leave you with a system — and stay on the floor while it
+              runs.
             </p>
             <p className="reveal body-copy">
               I don't write the report — I build the agent. I don't recommend the workflow — I deploy it, wire it into
-              your stack, train your team on it, and stay on the floor until it's earning its keep. The work doesn't
-              end when the deck is delivered. It begins.
+              your stack, train your team on it, and keep operating it as your business evolves. The work doesn't end
+              when the deck is delivered. It begins.
             </p>
             <div className="reveal truth">Verbs over nouns. Built over briefed.</div>
           </Chapter>
@@ -85,26 +86,41 @@ export function Editorial() {
           {/* III · THE OPERATOR */}
           <Chapter n="2" ghost="III" placard="III · The Operator">
             <h2 className="reveal font-display font-light text-[clamp(28px,4vw,52px)] leading-[1.05]">
-              I run businesses. <em className="italic text-gold">That is the qualification.</em>
+              Engineering depth. Operator instincts. <em className="italic text-gold">Both, in one set of hands.</em>
             </h2>
             <p className="reveal body-copy">
-              I'm Brandon — Brando — based on the Mornington Peninsula. I don't come from a Big Four advisory practice.
-              I come from the floor. I run Audio Spectrum. I run Sorrento Sharks.
+              I'm Brandon — Brando — an AI implementation specialist based on the Mornington Peninsula, building
+              production-grade systems for Australian businesses.
+            </p>
+            <p className="reveal body-copy">My work sits at the production edge of applied AI:</p>
+            <p className="reveal plaque">
+              Large language models, agentic systems, retrieval-augmented architectures, voice and vision pipelines,
+              automation infrastructure, and internal tooling — working natively across Anthropic, OpenAI, n8n, Make,
+              Vapi and Supabase, deployed into live Australian operations.
             </p>
             <p className="reveal body-copy">
-              I have spent more time inside the weeds of operations than I ever did inside a deck. That matters. When I
-              implement AI inside your business, I am not theorising about your inbox, your roster, your reporting, your
-              pipeline — I have lived all of it. Hands. Dirty.
+              Not demos. Not pilots. Systems that run inside the business, hold up under real load, and pay for
+              themselves.
             </p>
-            <div className="reveal truth">Hire the operator, not the advisor.</div>
+            <p className="reveal body-copy">
+              What separates the work is the perspective behind it. I've spent years inside Australian businesses —
+              running Audio Spectrum, Sorrento Sharks, and others — which means I'm not theorising about your operation.
+              I build for the way it actually works: customers, staff, suppliers, Monday mornings, the quarter-end
+              crunch.
+            </p>
+            <p className="reveal body-copy">
+              That combination is rare. Most engineers can ship the technology. Most consultants can describe the
+              strategy. Few do both, inside the business, with their hands on the keys.
+            </p>
+            <div className="reveal truth">You're not hiring a vendor. You're hiring the person who builds it, ships it, and stays.</div>
           </Chapter>
 
           {/* IV · THE METHOD */}
           <Chapter n="3" ghost="IV" placard="IV · The Method">
             <h2 className="reveal font-display font-light text-[clamp(28px,4vw,52px)] leading-[1.05]">
-              Embed. Diagnose. Build. <em className="italic text-gold">Hand over.</em>
+              Embed. Diagnose. Build. <em className="italic text-gold">Operate.</em>
             </h2>
-            <p className="reveal body-copy">Four moves. Time-bound. Outcome-bound.</p>
+            <p className="reveal body-copy">Four moves. Decisive at the front. Compounding at the back.</p>
             <div className="moves">
               {MOVES.map((m) => (
                 <div className="move reveal" key={m.label}>
@@ -113,7 +129,7 @@ export function Editorial() {
                 </div>
               ))}
             </div>
-            <div className="reveal truth">The brief is the system.</div>
+            <div className="reveal truth">Built once. Operated always.</div>
           </Chapter>
 
           {/* V · THE WORK */}
@@ -168,11 +184,16 @@ export function Editorial() {
               leaves.
             </p>
             <p className="reveal body-copy mx-auto text-center" style={{ maxWidth: '60ch' }}>
+              And the moment doesn't arrive once. It arrives daily — every lead, every customer, every decision, every
+              line of work that could be done sharper, faster, smarter. The operator who is inside catches each one.
+            </p>
+            <p className="reveal body-copy mx-auto text-center" style={{ maxWidth: '60ch' }}>
               If you're an Australian operator who knows the window is open right now — and you'd rather build than read
-              another article about it — we should talk. One project at a time. Limited slots. No retainers. No theatre.
+              another article about it — we should talk. A small bench by design. Long arcs, not one-off installs. No
+              theatre.
             </p>
             <a
-              className="reveal inline-flex items-center gap-3.5 mt-12 font-mono text-[13px] uppercase tracking-[0.26em] text-ink no-underline px-[34px] py-[18px] border border-ink transition-all duration-[400ms] [transition-timing-function:cubic-bezier(.16,1,.3,1)] hover:bg-ink hover:text-paper hover:gap-[22px]"
+              className="cta-forelock reveal inline-flex items-center gap-3.5 mt-12 font-mono text-[13px] uppercase tracking-[0.26em] text-ink no-underline px-[34px] py-[18px] border border-ink transition-all duration-[400ms] [transition-timing-function:cubic-bezier(.16,1,.3,1)]"
               href="mailto:brandon@kairosai.com.au?subject=Seize%20the%20moment"
             >
               Seize the moment →
