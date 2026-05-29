@@ -15,6 +15,13 @@ const MOMENTS = [
   { k: '005', lead: 'The moment work is repeated.', bold: 'Anything done twice is an automation', tail: 'waiting.' },
 ]
 
+// Placeholder evidence — anonymised illustrative examples. Replace with real client / moment / number.
+const CASES = [
+  { client: 'Peninsula trades firm', moment: 'Quote-to-booking automated the moment an enquiry lands.', num: '11 hrs/week back' },
+  { client: 'Regional clinic group', moment: 'Voice agent handling after-hours triage and bookings.', num: '+38% booked calls' },
+  { client: 'Wholesale distributor', moment: 'End-of-month reporting drafted, formatted and sent itself.', num: '3 days → 20 min' },
+]
+
 export function Editorial() {
   const root = useRef<HTMLElement>(null!)
 
@@ -159,11 +166,11 @@ export function Editorial() {
               Moments <em className="italic text-gold">captured.</em>
             </h2>
             <div className="cases">
-              {[0, 1, 2].map((i) => (
-                <div className="case reveal" key={i}>
-                  <div className="c-client">Client name</div>
-                  <div className="c-moment">The moment — what was seized, in one line.</div>
-                  <div className="c-num">+ the number</div>
+              {CASES.map((c) => (
+                <div className="case reveal" key={c.client}>
+                  <div className="c-client">{c.client}</div>
+                  <div className="c-moment">{c.moment}</div>
+                  <div className="c-num">{c.num}</div>
                 </div>
               ))}
             </div>
