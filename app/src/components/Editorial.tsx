@@ -102,8 +102,8 @@ export function Editorial() {
             <p className="reveal body-copy">My work sits at the production edge of applied AI:</p>
             <p className="reveal plaque">
               Large language models, agentic systems, retrieval-augmented architectures, voice and vision pipelines,
-              automation infrastructure, and internal tooling — working natively across Anthropic, OpenAI, n8n, Make,
-              Vapi and Supabase, deployed into live Australian operations.
+              automation infrastructure, and internal tooling. I work natively across [Anthropic, OpenAI, n8n, Make,
+              Vapi, Supabase, etc.] and have deployed [N+] systems into live Australian operations.
             </p>
             <p className="reveal body-copy">
               Not demos. Not pilots. Systems that run inside the business, hold up under real load, and pay for
