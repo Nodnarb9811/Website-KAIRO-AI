@@ -142,7 +142,7 @@ export function Editorial() {
           </p>
           <a
             className="inline-flex items-center gap-3.5 mt-12 font-mono text-[13px] uppercase tracking-[0.26em] text-ink no-underline px-[34px] py-[18px] border border-ink transition-all duration-[400ms] [transition-timing-function:cubic-bezier(.16,1,.3,1)] hover:bg-ink hover:text-paper hover:gap-[22px]"
-            href="mailto:hello@kairos.ai?subject=Seize%20the%20moment"
+            href="mailto:brandon@kairosai.com.au?subject=Seize%20the%20moment"
           >
             Seize the moment →
           </a>
