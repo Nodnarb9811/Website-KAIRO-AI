@@ -8,6 +8,7 @@ import { ActText } from './components/ActText'
 import { ActNav } from './components/ActNav'
 import { Forelock } from './components/Forelock'
 import { Editorial } from './components/Editorial'
+import { EditorialJourney } from './components/EditorialJourney'
 import { Fallback } from './components/Fallback'
 
 export default function App() {
@@ -31,6 +32,7 @@ function Cinematic() {
       {/* tall transparent spacer that the camera timeline is mapped onto */}
       <div id="cinematic" className="relative z-[1] pointer-events-none" style={{ height: '640vh' }} />
       <Editorial />
+      <EditorialJourney />
     </>
   )
 }
