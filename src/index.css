@@ -1,0 +1,84 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  html {
+    /* Lenis controls scroll; keep native smooth off so it doesn't fight. */
+    scroll-behavior: auto;
+  }
+
+  html.lenis,
+  html.lenis body {
+    height: auto;
+  }
+
+  .lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
+
+  .lenis.lenis-stopped {
+    overflow: hidden;
+  }
+
+  body {
+    @apply bg-paper text-ink font-display antialiased;
+    margin: 0;
+    overflow-x: hidden;
+    font-feature-settings: "liga" 1, "calt" 1;
+  }
+
+  /* Hide the native cursor on devices that get the custom one. */
+  @media (hover: hover) and (pointer: fine) {
+    body.has-custom-cursor,
+    body.has-custom-cursor * {
+      cursor: none;
+    }
+  }
+
+  ::selection {
+    background: #c9a24b;
+    color: #f4f1ea;
+  }
+}
+
+@layer components {
+  /* Eyebrow → mono label, gold, wide tracking */
+  .eyebrow {
+    @apply font-mono text-[12px] uppercase tracking-eyebrow text-gold;
+  }
+
+  /* Gold hairline divider — ~30% width, centred */
+  .hairline {
+    @apply mx-auto h-px w-[30%] origin-left bg-gold/60;
+  }
+
+  /* Body copy rhythm */
+  .body-copy {
+    @apply max-w-readable font-display text-[1.25rem] leading-[1.7] text-ink/85;
+  }
+
+  .pull-quote {
+    @apply font-display italic text-gold text-[1.6rem] leading-snug;
+  }
+
+  /* Roman-numeral placard — thin marble plate, floats top-left */
+  .placard {
+    @apply font-mono text-[11px] uppercase tracking-[0.3em] text-ink/50;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
