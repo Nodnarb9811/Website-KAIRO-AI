@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Kairo AI — the agentic intelligence layer for modern teams. Automate work, build agents, and ship faster." />
+  <title>Kairo AI — Agentic Intelligence for Modern Teams</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Animated background -->
+  <div class="bg-grid" aria-hidden="true"></div>
+  <div class="bg-glow" aria-hidden="true"></div>
+
+  <!-- Navigation -->
+  <header class="nav" id="nav">
+    <div class="container nav-inner">
+      <a href="#top" class="logo">
+        <span class="logo-mark">◈</span>
+        <span class="logo-text">Kairo<span class="logo-accent">AI</span></span>
+      </a>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="#product">Product</a>
+        <a href="#features">Features</a>
+        <a href="#workflow">Workflow</a>
+        <a href="#pricing">Pricing</a>
+      </nav>
+      <div class="nav-actions">
+        <a href="#" class="btn btn-ghost">Sign in</a>
+        <a href="#cta" class="btn btn-primary">Get started</a>
+      </div>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main id="top">
+    <!-- Hero -->
+    <section class="hero">
+      <div class="container">
+        <div class="badge reveal">
+          <span class="dot"></span> Now in public beta — v2.0
+        </div>
+        <h1 class="hero-title reveal">
+          The agentic layer<br />for <span class="grad">modern teams</span>.
+        </h1>
+        <p class="hero-sub reveal">
+          Kairo AI turns messy workflows into autonomous agents. Connect your
+          tools, describe the outcome, and let intelligence do the work — at the
+          right moment, every time.
+        </p>
+        <div class="hero-actions reveal">
+          <a href="#cta" class="btn btn-primary btn-lg">Start building free</a>
+          <a href="#product" class="btn btn-ghost btn-lg">See how it works →</a>
+        </div>
+        <div class="hero-meta reveal">
+          <span>No credit card required</span>
+          <span class="sep">•</span>
+          <span>5-minute setup</span>
+          <span class="sep">•</span>
+          <span>SOC 2 ready</span>
+        </div>
+      </div>
+
+      <!-- Floating product preview -->
+      <div class="hero-visual reveal" id="product">
+        <div class="window">
+          <div class="window-bar">
+            <span class="wb-dot"></span><span class="wb-dot"></span><span class="wb-dot"></span>
+            <span class="window-title">kairo · agent runtime</span>
+          </div>
+          <div class="window-body">
+            <div class="terminal">
+              <p><span class="prompt">→</span> kairo run "triage support inbox"</p>
+              <p class="muted">◈ spinning up agent <span class="tag">support-triage</span></p>
+              <p class="muted">◈ connected: Gmail, Linear, Slack</p>
+              <p class="ok">✓ 142 tickets analyzed · 38 routed · 9 escalated</p>
+              <p class="ok">✓ drafted 91 replies · awaiting approval</p>
+              <p><span class="prompt">→</span> <span class="cursor">▍</span></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Logos / social proof -->
+    <section class="logos">
+      <div class="container">
+        <p class="logos-label">Trusted by fast-moving teams</p>
+        <div class="logos-row">
+          <span>Northwind</span>
+          <span>Vertex Labs</span>
+          <span>Loop</span>
+          <span>Cascade</span>
+          <span>Orbit</span>
+          <span>Meridian</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section class="features" id="features">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="eyebrow">Capabilities</span>
+          <h2>Everything you need to ship intelligent automation.</h2>
+          <p>From a single prompt to a production-grade fleet of agents — Kairo
+            handles orchestration, memory, and tools so you don't have to.</p>
+        </div>
+
+        <div class="feature-grid">
+          <article class="card reveal">
+            <div class="card-icon">⚡</div>
+            <h3>Instant agents</h3>
+            <p>Describe a task in plain language and Kairo builds a working agent
+              with the right tools wired up automatically.</p>
+          </article>
+          <article class="card reveal">
+            <div class="card-icon">🔗</div>
+            <h3>200+ integrations</h3>
+            <p>Native connectors for the tools your team already lives in — Slack,
+              Notion, GitHub, Salesforce, and more.</p>
+          </article>
+          <article class="card reveal">
+            <div class="card-icon">🧠</div>
+            <h3>Persistent memory</h3>
+            <p>Agents remember context across runs, so they get smarter and more
+              precise the longer they work.</p>
+          </article>
+          <article class="card reveal">
+            <div class="card-icon">🛡️</div>
+            <h3>Governed by default</h3>
+            <p>Granular permissions, audit logs, and human-in-the-loop approvals
+              keep every action accountable.</p>
+          </article>
+          <article class="card reveal">
+            <div class="card-icon">📈</div>
+            <h3>Observability built in</h3>
+            <p>Trace every decision, measure outcomes, and tune behavior from a
+              single live dashboard.</p>
+          </article>
+          <article class="card reveal">
+            <div class="card-icon">🚀</div>
+            <h3>Ship to production</h3>
+            <p>Go from prototype to deployed workflow in minutes with versioning,
+              rollbacks, and scheduling.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Workflow / Steps -->
+    <section class="workflow" id="workflow">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="eyebrow">How it works</span>
+          <h2>Three steps from idea to autonomous workflow.</h2>
+        </div>
+        <div class="steps">
+          <div class="step reveal">
+            <div class="step-num">01</div>
+            <h3>Connect</h3>
+            <p>Link your stack in a click. Kairo maps your tools, data, and
+              permissions into a unified workspace.</p>
+          </div>
+          <div class="step reveal">
+            <div class="step-num">02</div>
+            <h3>Describe</h3>
+            <p>Tell Kairo the outcome you want. It plans the steps, picks the
+              tools, and proposes an agent for review.</p>
+          </div>
+          <div class="step reveal">
+            <div class="step-num">03</div>
+            <h3>Deploy</h3>
+            <p>Approve once and let it run — on a schedule, on a trigger, or
+              on demand. Monitor and refine as you go.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stats -->
+    <section class="stats">
+      <div class="container stats-grid">
+        <div class="stat reveal"><span class="stat-num" data-target="12">0</span><span class="stat-suf">M+</span><p>tasks automated</p></div>
+        <div class="stat reveal"><span class="stat-num" data-target="200">0</span><span class="stat-suf">+</span><p>integrations</p></div>
+        <div class="stat reveal"><span class="stat-num" data-target="99">0</span><span class="stat-suf">.9%</span><p>uptime SLA</p></div>
+        <div class="stat reveal"><span class="stat-num" data-target="40">0</span><span class="stat-suf">h</span><p>saved per week</p></div>
+      </div>
+    </section>
+
+    <!-- Pricing -->
+    <section class="pricing" id="pricing">
+      <div class="container">
+        <div class="section-head reveal">
+          <span class="eyebrow">Pricing</span>
+          <h2>Start free. Scale when you're ready.</h2>
+        </div>
+        <div class="price-grid">
+          <article class="price-card reveal">
+            <h3>Starter</h3>
+            <div class="price"><span class="amount">$0</span><span class="per">/mo</span></div>
+            <p class="price-desc">For individuals exploring agentic workflows.</p>
+            <ul>
+              <li>3 active agents</li>
+              <li>500 runs / month</li>
+              <li>Community support</li>
+              <li>Core integrations</li>
+            </ul>
+            <a href="#cta" class="btn btn-ghost btn-block">Get started</a>
+          </article>
+          <article class="price-card featured reveal">
+            <span class="price-tag">Most popular</span>
+            <h3>Team</h3>
+            <div class="price"><span class="amount">$49</span><span class="per">/mo</span></div>
+            <p class="price-desc">For teams shipping automation in production.</p>
+            <ul>
+              <li>Unlimited agents</li>
+              <li>25,000 runs / month</li>
+              <li>Priority support</li>
+              <li>All 200+ integrations</li>
+              <li>Audit logs & SSO</li>
+            </ul>
+            <a href="#cta" class="btn btn-primary btn-block">Start free trial</a>
+          </article>
+          <article class="price-card reveal">
+            <h3>Enterprise</h3>
+            <div class="price"><span class="amount">Custom</span></div>
+            <p class="price-desc">For organizations with advanced needs.</p>
+            <ul>
+              <li>Dedicated infrastructure</li>
+              <li>Unlimited runs</li>
+              <li>White-glove onboarding</li>
+              <li>Custom integrations</li>
+              <li>SOC 2 & HIPAA</li>
+            </ul>
+            <a href="#cta" class="btn btn-ghost btn-block">Contact sales</a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta" id="cta">
+      <div class="container cta-inner reveal">
+        <h2>Put your work on autopilot.</h2>
+        <p>Join thousands of teams building with Kairo AI. Your first agent is
+          ready in minutes.</p>
+        <form class="cta-form" id="ctaForm">
+          <input type="email" placeholder="you@company.com" aria-label="Email" required />
+          <button type="submit" class="btn btn-primary btn-lg">Get early access</button>
+        </form>
+        <p class="cta-note" id="ctaNote"></p>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <a href="#top" class="logo">
+          <span class="logo-mark">◈</span>
+          <span class="logo-text">Kairo<span class="logo-accent">AI</span></span>
+        </a>
+        <p>Agentic intelligence for modern teams.</p>
+      </div>
+      <div class="footer-cols">
+        <div class="footer-col">
+          <h4>Product</h4>
+          <a href="#features">Features</a>
+          <a href="#pricing">Pricing</a>
+          <a href="#workflow">Workflow</a>
+          <a href="#">Changelog</a>
+        </div>
+        <div class="footer-col">
+          <h4>Company</h4>
+          <a href="#">About</a>
+          <a href="#">Careers</a>
+          <a href="#">Blog</a>
+          <a href="#">Contact</a>
+        </div>
+        <div class="footer-col">
+          <h4>Resources</h4>
+          <a href="#">Docs</a>
+          <a href="#">API</a>
+          <a href="#">Community</a>
+          <a href="#">Status</a>
+        </div>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <span>© 2026 Kairo AI. All rights reserved.</span>
+      <div class="footer-legal">
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+        <a href="#">Security</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
